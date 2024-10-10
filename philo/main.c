@@ -53,6 +53,39 @@ void init_vars_monitor(t_args_monitor *args_monitor, pthread_mutex_t *mutex_prin
 	args_monitor->number_of_philosophers = num;
 }
 
+int	*init_fork_on_table(int num_philo)
+{
+	int		j;
+	int		*fork_ontable;
+
+	fork_ontable = malloc(sizeof(int) * num_philo);
+	if (!fork_ontable)
+		return (NULL);
+	j = 0;
+	while (j < num_philo)
+	{
+		fork_ontable[j] = 1;
+		j++;
+	}
+	return (fork_ontable);
+}
+
+int	*init_philo_alive(int num_philo)
+{
+	int i;
+	int	*alive;
+	i = 0;
+	alive = malloc(sizeof(int) * num_philo);
+	if (!alive)
+		return (NULL);
+	while(i < num_philo)
+	{
+		alive[i] = 1;
+		i++;
+	}
+	return (alive);
+}
+
 int	main(int ac, char **av)
 {
 	int	num_philo = ft_atoi(av[1]);
@@ -62,6 +95,8 @@ int	main(int ac, char **av)
 
 	pthread_mutex_t **mutex_forks;
 	mutex_forks = malloc((num_philo) * sizeof(pthread_mutex_t *));
+	int i = 0;
+
 	///protect
 	int k = 0;
 	while (k < num_philo)
@@ -78,38 +113,21 @@ int	main(int ac, char **av)
 		return (1);
 	/*----------------check_input_error--------------------------*/
 
+	/*----------------initialize forks on the table--------------------------*/
+	int	*fork_ontable = init_fork_on_table(num_philo);
+	/*----------------initialize forks on the table--------------------------*/
+
+	/*----------------initialize alive state on the table--------------------------*/
+	int	*alive = init_philo_alive(num_philo);
+	/*----------------initialize alive state on the table--------------------------*/
+
+	/*----------------Set_vars_for_each_philo--------------------------*/
 
 	void	**arg_tab; ///MAKE ARG_TAB ON STACK
 	arg_tab = (void **)malloc(sizeof(t_args) * (num_philo + 1));
 	if (arg_tab == NULL)
 		return (1);
 
-	/*----------------initialize forks on the table--------------------------*/
-	int	*fork_ontable = malloc(sizeof(int) * num_philo);
-	if (!fork_ontable)
-		return (1);
-	
-	int j = 0;
-	while (j < num_philo)
-	{
-		fork_ontable[j] = 1;
-		j++;
-	}
-	/*----------------initialize forks on the table--------------------------*/
-
-	/*----------------Set_vars_for_each_philo--------------------------*/
-	int i = 0;////////////////////////////////////////////////////////////////////
-	int	*alive = malloc(sizeof(int) * num_philo);///////////////////////
-	if (!alive)/////////////////////////////////////////////////////////
-	{
-		//free;
-		return (1);
-	}
-	while(i < num_philo)
-	{
-		alive[i] = 1;
-		i++;
-	}
 	i = 0;
 	while (i < num_philo)
 	{
@@ -123,6 +141,8 @@ int	main(int ac, char **av)
 		i++;
 	}
 	arg_tab[i] = NULL;
+
+	/*----------------Set_vars_for_each_philo--------------------------*/
 	/*----------------Create_threads--------------------------*/
 	pthread_t	philo[num_philo];
 	pthread_t	monitor;
