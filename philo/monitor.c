@@ -1,0 +1,44 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitor.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shuwang <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/28 16:42:20 by shuwang           #+#    #+#             */
+/*   Updated: 2024/09/28 16:42:22 by shuwang          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "philo.h"
+
+int check_alive(void *args_monitor)
+{
+	int i;
+	int num;
+
+	num = ((t_args_monitor *)args_monitor)->number_of_philosophers;
+	i = 0;
+	while (i < num)
+	{
+		if (((t_args_monitor *)args_monitor)->alive[i] == 0)
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+void	*monitor_func(void *args_monitor)
+{
+	while(1)
+	{
+		if (!check_alive(args_monitor))
+		{
+			*(((t_args_monitor *)args_monitor)->sim_end) = 1;
+			break ;
+		}
+		usleep(WAIT_INTERVAL_MONITOR);
+	}
+	//printf("SIMULATION STOP!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+	return (NULL);
+}
