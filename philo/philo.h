@@ -64,7 +64,7 @@ int	input_error(int ac, char **av);
 int ft_atoi(const char *nptr);
 int	input_error(int ac, char **av);
 size_t	ft_strlen(const char *s);
-void init_vars(t_args *args, int ac, char **av, int i, pthread_mutex_t **mutex_forks, pthread_mutex_t *mutex_printf, int *fork_ontable, int *alive, int *sim_end);
+void init_vars(t_args *args, int ac, char **av, int i, pthread_mutex_t *mutex_printf, int *alive, int *sim_end);
 void	free_tab(void **tab);
 
 time_t	t_interval(time_t t_begin, time_t t_end);
