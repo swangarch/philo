@@ -12,6 +12,24 @@
 
 #include "philo.h"
 
+int check_all_eat_enough(void *args_monitor)
+{
+	int	i;
+	int	num;
+
+	i = 0;
+	num = ((t_args_monitor *)args_monitor)->number_of_philosophers;
+	if ( ((t_args_monitor *)args_monitor)->number_must_eat < 0)
+			return (0);
+	while (i < num)
+	{
+		if (((t_args_monitor *)args_monitor)->number_eaten[i] < ((t_args_monitor *)args_monitor)->number_must_eat)
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 int check_alive(void *args_monitor)
 {
 	int i;
@@ -33,6 +51,11 @@ void	*monitor_func(void *args_monitor)
 	while(1)
 	{
 		if (!check_alive(args_monitor))
+		{
+			*(((t_args_monitor *)args_monitor)->sim_end) = 1;
+			break ;
+		}
+		else if (check_all_eat_enough(args_monitor))
 		{
 			*(((t_args_monitor *)args_monitor)->sim_end) = 1;
 			break ;

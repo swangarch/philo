@@ -73,59 +73,47 @@ int *init_num_eaten(int num_philo)
 		return (NULL);
 	while(i < num_philo)
 	{
-		number_eaten[i] = 1;
+		number_eaten[i] = 0;
 		i++;
 	}
 	return (number_eaten);
 }
 
-// void init_setup(t_setup *setup, int ac, char **av)
-// {
-// 	setup->number_of_philosophers = ft_atoi(av[1]);
-// 	setup->time_to_die = ft_atoi(av[2]) * 1000;
-// 	setup->time_to_eat = ft_atoi(av[3]) * 1000;
-// 	setup->time_to_sleep = ft_atoi(av[4]) * 1000;
-// 	if (ac == 6)
-// 		setup->number_of_times_each_philosopher_must_eat = ft_atoi(av[5]);
-// 	else if (ac == 5)
-// 		setup->number_of_times_each_philosopher_must_eat = -1;
-// }
-
-void init_vars_setup(t_args *args, int ac, char **av, int i)
+void init_vars_setup(t_args *args, char **av, int i)
 {
 	args->philo_index = i;
 	args->number_of_philosophers = ft_atoi(av[1]);
 	args->time_to_die = ft_atoi(av[2]) * 1000;
 	args->time_to_eat = ft_atoi(av[3]) * 1000;
 	args->time_to_sleep = ft_atoi(av[4]) * 1000;
-	if (ac == 6)
-		args->number_of_times_each_philosopher_must_eat = ft_atoi(av[5]);
-	else if (ac == 5)
-		args->number_of_times_each_philosopher_must_eat = -1;
 }
 
-void init_vars_shared(t_args *args, pthread_mutex_t *mutex_printf, pthread_mutex_t **mutex_forks, int *alive)
+void init_vars_shared(t_args *args, pthread_mutex_t *mutex_printf, pthread_mutex_t **mutex_forks, int *alive, int *fork_ontable)
 {
 	args->mutex_printf = mutex_printf;
 	args->number_eaten = 0;
 	args->mutex_fork = mutex_forks;
 	if (!args->mutex_fork)
 		return ; /////////////protect
-	args->fork_ontable = init_fork_on_table(args->number_of_philosophers); /////////////////////protect
+	args->fork_ontable = fork_ontable; /////////////////////protect
 	args->alive = alive;
 }
 
-void init_sim_state(t_args *args, int *sim_end, time_t start_time)
+void init_sim_state(t_args *args, int *sim_end, time_t start_time, int num_must_eat, int *number_eaten)
 {
 	args->sim_end = sim_end;
 	args->start_time = start_time;
+	args->number_of_times_each_philosopher_must_eat = num_must_eat;
+	args->number_eaten = number_eaten;
 }
 
-void init_vars_monitor(t_args_monitor *args_monitor, pthread_mutex_t *mutex_printf, int *alive, int *sim_end, int num)
+void init_vars_monitor(t_args_monitor *args_monitor, pthread_mutex_t *mutex_printf, int *alive, int *sim_end,int num_must_eat, int *number_eaten, int num)
 {
 	args_monitor->sim_end = sim_end;
 	args_monitor->mutex_printf = mutex_printf;
 	args_monitor->alive = alive;
+	args_monitor->number_must_eat = num_must_eat;
+	args_monitor->number_eaten = number_eaten;
 	args_monitor->number_of_philosophers = num;
 }
 
@@ -146,6 +134,12 @@ int	main(int ac, char **av)
 	if (input_error(ac, av))
 		return (1);
 	/*----------------check_input_error--------------------------*/
+	int num_must_eat;
+	if (ac == 6)
+		num_must_eat = ft_atoi(av[5]);
+	else if (ac == 5)
+		num_must_eat = -1;
+
 	time_t start_time;
 
 	start_time = now_time();
@@ -157,6 +151,7 @@ int	main(int ac, char **av)
 	int	sim_end = 0;
 	int	*fork_ontable = init_fork_on_table(num_philo);
 	int	*alive = init_philo_alive(num_philo);
+	int *number_eaten = init_num_eaten(num_philo);
 	pthread_mutex_t **mutex_forks = init_mutex_forks(num_philo);
 	/*----------------Set_vars_for_each_philo--------------------------*/
 	void	**arg_tab; ///MAKE ARG_TAB 
@@ -173,9 +168,9 @@ int	main(int ac, char **av)
 			free_tab(arg_tab);
 			return (1);
 		}
-		init_vars_setup((t_args *)arg_tab[i], ac, av, i);
-		init_vars_shared((t_args *)arg_tab[i], &mutex_printf, mutex_forks, alive);
-		init_sim_state((t_args *)arg_tab[i], &sim_end, start_time);
+		init_vars_setup((t_args *)arg_tab[i], av, i);
+		init_vars_shared((t_args *)arg_tab[i], &mutex_printf, mutex_forks, alive, fork_ontable);
+		init_sim_state((t_args *)arg_tab[i], &sim_end, start_time, num_must_eat, number_eaten);
 		i++;
 	}
 	arg_tab[i] = NULL;
@@ -185,7 +180,7 @@ int	main(int ac, char **av)
 	pthread_t	monitor;
 	t_args_monitor monitor_vars;
 
-	init_vars_monitor(&monitor_vars, &mutex_printf, alive, &sim_end, 5);//ft_atoi(av[1]));
+	init_vars_monitor(&monitor_vars, &mutex_printf, alive, &sim_end, num_must_eat, number_eaten, num_philo);//ft_atoi(av[1]));
 	pthread_create(&monitor, NULL, &monitor_func, &monitor_vars);
 
 

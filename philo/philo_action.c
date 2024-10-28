@@ -26,14 +26,12 @@ int philo_eat(time_t *last_eat_time, void *args)
 	time_t	current_time = start_eat_time;
 	int 	time_to_die = ((t_args *)args)->time_to_die;
 	int		time_to_eat = ((t_args *)args)->time_to_eat;
+	int     p_index = ((t_args *)args)->philo_index;
 
 	*last_eat_time = start_eat_time;
-
 	if (check_sim_end(args))
 		return (0);
-
 	print_msg(EAT, args);
-	
 	while ((current_time - start_eat_time) < time_to_eat)
 	{
 		if (check_sim_end(args))
@@ -46,7 +44,7 @@ int philo_eat(time_t *last_eat_time, void *args)
 		usleep(WAIT_INTERVAL);
 		current_time = now_time();
 	}
-	((t_args *)args)->number_eaten++;
+	((t_args *)args)->number_eaten[p_index]++;
 	return (1);
 }
 

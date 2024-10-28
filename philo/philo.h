@@ -60,6 +60,7 @@ typedef struct s_args
 typedef struct s_args_monitor
 {
 	int	number_of_philosophers;
+	int number_must_eat;
 	int	*number_eaten;
 	int	*sim_end;
 	pthread_mutex_t *mutex_printf;
