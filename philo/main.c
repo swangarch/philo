@@ -62,13 +62,39 @@ int	*init_philo_alive(int num_philo)
 	return (alive);
 }
 
-void init_vars(t_args *args, int ac, char **av, int i, pthread_mutex_t *mutex_printf, int *alive, int *sim_end)
+int *init_num_eaten(int num_philo)
 {
+	int i;
+	int	*number_eaten;
 
-	int	num_philo = ft_atoi(av[1]);
+	number_eaten = malloc(sizeof(int) * num_philo);
+	i = 0;
+	if (!number_eaten)
+		return (NULL);
+	while(i < num_philo)
+	{
+		number_eaten[i] = 1;
+		i++;
+	}
+	return (number_eaten);
+}
 
+// void init_setup(t_setup *setup, int ac, char **av)
+// {
+// 	setup->number_of_philosophers = ft_atoi(av[1]);
+// 	setup->time_to_die = ft_atoi(av[2]) * 1000;
+// 	setup->time_to_eat = ft_atoi(av[3]) * 1000;
+// 	setup->time_to_sleep = ft_atoi(av[4]) * 1000;
+// 	if (ac == 6)
+// 		setup->number_of_times_each_philosopher_must_eat = ft_atoi(av[5]);
+// 	else if (ac == 5)
+// 		setup->number_of_times_each_philosopher_must_eat = -1;
+// }
+
+void init_vars_setup(t_args *args, int ac, char **av, int i)
+{
 	args->philo_index = i;
-	args->number_of_philosophers = num_philo;
+	args->number_of_philosophers = ft_atoi(av[1]);
 	args->time_to_die = ft_atoi(av[2]) * 1000;
 	args->time_to_eat = ft_atoi(av[3]) * 1000;
 	args->time_to_sleep = ft_atoi(av[4]) * 1000;
@@ -76,26 +102,23 @@ void init_vars(t_args *args, int ac, char **av, int i, pthread_mutex_t *mutex_pr
 		args->number_of_times_each_philosopher_must_eat = ft_atoi(av[5]);
 	else if (ac == 5)
 		args->number_of_times_each_philosopher_must_eat = -1;
-	/*----------------initialize num eaten--------------------------*/
-	int j = 0;////////////////////////////////////////////////////////////////////
-	int	*number_eaten = malloc(sizeof(int) * num_philo);///////////////////////
-	if (!number_eaten)/////////////////////////////////////////////////////////
-		return ;//free;
-	while(j < num_philo)
-	{
-		number_eaten[j] = 1;
-		j++;
-	}
-	/*----------------initialize num eaten--------------------------*/
+}
+
+void init_vars_shared(t_args *args, pthread_mutex_t *mutex_printf, pthread_mutex_t **mutex_forks, int *alive)
+{
 	args->mutex_printf = mutex_printf;
 	args->number_eaten = 0;
-	args->sim_end = sim_end;
-	args->start_time = now_time();
-	args->mutex_fork = init_mutex_forks(num_philo);
+	args->mutex_fork = mutex_forks;
 	if (!args->mutex_fork)
 		return ; /////////////protect
-	args->fork_ontable = init_fork_on_table(num_philo); /////////////////////protect
+	args->fork_ontable = init_fork_on_table(args->number_of_philosophers); /////////////////////protect
 	args->alive = alive;
+}
+
+void init_sim_state(t_args *args, int *sim_end, time_t start_time)
+{
+	args->sim_end = sim_end;
+	args->start_time = start_time;
 }
 
 void init_vars_monitor(t_args_monitor *args_monitor, pthread_mutex_t *mutex_printf, int *alive, int *sim_end, int num)
@@ -117,42 +140,26 @@ void destroy_mutex_forks(int num_philo, pthread_mutex_t **mutex_forks)
 	}
 }
 
-
 int	main(int ac, char **av)
 {
 	/*----------------check_input_error--------------------------*/
 	if (input_error(ac, av))
 		return (1);
 	/*----------------check_input_error--------------------------*/
+	time_t start_time;
 
+	start_time = now_time();
 	int	num_philo = ft_atoi(av[1]);
-
-	pthread_mutex_t **mutex_forks;
-
-	mutex_forks = init_mutex_forks(num_philo);
-	if (!mutex_forks)
-		return (1);
-
 	pthread_mutex_t mutex_printf;
 	pthread_mutex_init(&mutex_printf, NULL);
 
-
-	
 	int i = 0;
 	int	sim_end = 0;
-	
-
-	/*----------------initialize forks on the table--------------------------*/
 	int	*fork_ontable = init_fork_on_table(num_philo);
-	/*----------------initialize forks on the table--------------------------*/
-
-	/*----------------initialize alive state on the table--------------------------*/
 	int	*alive = init_philo_alive(num_philo);
-	/*----------------initialize alive state on the table--------------------------*/
-
+	pthread_mutex_t **mutex_forks = init_mutex_forks(num_philo);
 	/*----------------Set_vars_for_each_philo--------------------------*/
-
-	void	**arg_tab; ///MAKE ARG_TAB ON STACK
+	void	**arg_tab; ///MAKE ARG_TAB 
 	arg_tab = (void **)malloc(sizeof(t_args) * (num_philo + 1));
 	if (arg_tab == NULL)
 		return (1);
@@ -166,21 +173,27 @@ int	main(int ac, char **av)
 			free_tab(arg_tab);
 			return (1);
 		}
-		init_vars((t_args *)arg_tab[i], ac, av, i, &mutex_printf, alive, &sim_end);
-		//init_vars((t_args *)arg_tab[i], ac, av, i, mutex_forks, &mutex_printf, fork_ontable, alive, &sim_end);
+		init_vars_setup((t_args *)arg_tab[i], ac, av, i);
+		init_vars_shared((t_args *)arg_tab[i], &mutex_printf, mutex_forks, alive);
+		init_sim_state((t_args *)arg_tab[i], &sim_end, start_time);
 		i++;
 	}
 	arg_tab[i] = NULL;
-
 	/*----------------Set_vars_for_each_philo--------------------------*/
 	/*----------------Create_threads--------------------------*/
-	pthread_t	philo[num_philo];
+	
 	pthread_t	monitor;
 	t_args_monitor monitor_vars;
 
 	init_vars_monitor(&monitor_vars, &mutex_printf, alive, &sim_end, 5);//ft_atoi(av[1]));
 	pthread_create(&monitor, NULL, &monitor_func, &monitor_vars);
 
+
+	pthread_t	*philo;
+
+	philo = malloc(sizeof(pthread_t) * num_philo);
+	if (!philo)
+		return (1);
 	i = 0;
 	while (i < num_philo)
 	{

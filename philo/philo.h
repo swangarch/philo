@@ -31,6 +31,15 @@
 #define THINK 3
 #define DEAD 4
 
+typedef struct s_setup
+{
+	int	number_of_philosophers;
+	int	time_to_die;
+	int	time_to_eat;
+	int	time_to_sleep;
+	int	number_of_times_each_philosopher_must_eat;
+}	t_setup;
+
 typedef struct s_args
 {
 	int	philo_index;
@@ -64,7 +73,7 @@ int	input_error(int ac, char **av);
 int ft_atoi(const char *nptr);
 int	input_error(int ac, char **av);
 size_t	ft_strlen(const char *s);
-void init_vars(t_args *args, int ac, char **av, int i, pthread_mutex_t *mutex_printf, int *alive, int *sim_end);
+//void init_vars(t_args *args, int ac, char **av, int i, pthread_mutex_t *mutex_printf, int *alive, int *sim_end, time_t start_time);
 void	free_tab(void **tab);
 
 time_t	t_interval(time_t t_begin, time_t t_end);
