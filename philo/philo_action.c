@@ -29,6 +29,10 @@ int philo_eat(time_t *last_eat_time, void *args)
 	int     p_index = ((t_args *)args)->philo_index;
 
 	*last_eat_time = start_eat_time;
+
+	if (now_time() - *last_eat_time + 5 < time_to_die)
+		return (1);
+
 	if (check_sim_end(args))
 		return (0);
 	print_msg(EAT, args);

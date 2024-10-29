@@ -49,7 +49,7 @@ void	*philo_func(void *args)
 			((t_args *)args)->alive[p_index] = philo_eat(&last_eat_time, args);
 			if (!((t_args *)args)->alive[p_index])
 				break ;
-			printf("number of eat of philo %d is %d\n", p_index, ((t_args *)args)->number_eaten[p_index]);
+			//printf("number of eat of philo %d is %d\n", p_index, ((t_args *)args)->number_eaten[p_index]);
 			if (n_must_eat >= 0 && ((t_args *)args)->number_eaten[p_index] >= n_must_eat)///////
 				break ;/////////////////////////////////////////////////////////////////////////
 		}
