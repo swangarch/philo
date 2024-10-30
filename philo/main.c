@@ -128,9 +128,12 @@ void destroy_mutex_forks(int num_philo, pthread_mutex_t **mutex_forks)
 	}
 }
 
-
-int	simulation(int ac, char **av)
+int	main(int ac, char **av)
 {
+	/*----------------check_input_error--------------------------*/
+	if (input_error(ac, av))
+		return (1);
+	/*----------------check_input_error--------------------------*/
 	int num_must_eat;
 	if (ac == 6)
 		num_must_eat = ft_atoi(av[5]);
@@ -208,17 +211,6 @@ int	simulation(int ac, char **av)
 	/////pthread_mutex_destroy(&mutex_forks[k]);
 	free_tab(arg_tab);//need to free tab
 	free(fork_ontable);
-
-	return (0);
-}
-
-int	main(int ac, char **av)
-{
-	/*----------------check_input_error--------------------------*/
-	if (input_error(ac, av))
-		return (1);
-	/*----------------check_input_error--------------------------*/
-	simulation(ac, av);
 	
 	return (0);
 }

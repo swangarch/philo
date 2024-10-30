@@ -38,20 +38,18 @@ void	*philo_func(void *args)
 	{
 		/*----------------take forks--------------------------*/
 		pthread_mutex_lock(mutex_fork[p_index]);//-----
-		if (forks_available(&fork_right, &fork_left, args) && (now_time() - last_eat_time + ((t_args *)args)->time_to_sleep + 20 > ((t_args *)args)->time_to_die))
+		if (forks_available(&fork_right, &fork_left, args))
 			take_forks(&fork_right, &fork_left, args);
 		pthread_mutex_unlock(mutex_fork[p_index]);//------
 		/*----------------take forks--------------------------*/
 
-		// if (now_time() - *last_eat_time + time_to_sleep + 5 < time_to_die)
-		// return (1);
 		/*----------------philo eat--------------------------*/
 		if (fork_right == 1 && fork_right == 1)
 		{
 			((t_args *)args)->alive[p_index] = philo_eat(&last_eat_time, args);
 			if (!((t_args *)args)->alive[p_index])
 				break ;
-			//printf("number of eat of philo %d is %d\n", p_index, ((t_args *)args)->number_eaten[p_index]);///////////////////////????
+			//printf("number of eat of philo %d is %d\n", p_index, ((t_args *)args)->number_eaten[p_index]);
 			if (n_must_eat >= 0 && ((t_args *)args)->number_eaten[p_index] >= n_must_eat)///////
 				break ;/////////////////////////////////////////////////////////////////////////
 		}
