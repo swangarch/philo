@@ -12,192 +12,150 @@
 
 #include "philo.h"
 
-void	*philo_func(void *args)
+pthread_mutex_t **init_mutex_forks(int num_philo)
 {
-	time_t start_time = ((t_args *)args)->start_time;
-	int p_index = ((t_args *)args)->philo_index;
-	int n_must_eat = ((t_args *)args)->number_of_times_each_philosopher_must_eat;
-	pthread_mutex_t mutex = *(((t_args *)args)->mutex);
-	time_t last_eat_time = start_time;
+	pthread_mutex_t **mutex_forks;
+	mutex_forks = malloc((num_philo) * sizeof(pthread_mutex_t *));
+	if (!mutex_forks)
+		return (NULL);
 
-	/*----------------initialize forks--------------------------*/
-	int fork_left = 0;
-	int fork_right = 0;
-	/*----------------initialize forks--------------------------*/
-
-	while(1)
+	int i = 0;
+	while (i < num_philo)
 	{
-		/*----------------take forks--------------------------*/
-		pthread_mutex_lock(&mutex);//-----
-		if (forks_available(&fork_right, &fork_left, args))
-		{
-			take_fork_right(&fork_right, args);
-			printf("%ld %d has taken a fork\n", timestamp(start_time), p_index + 1);
-			take_fork_left(&fork_left, args);
-			printf("%ld %d has taken a fork\n", timestamp(start_time), p_index + 1);
-		}
-		pthread_mutex_unlock(&mutex);//------
-		/*----------------take forks--------------------------*/
-
-		/*----------------philo eat--------------------------*/
-		if (fork_right == 1 && fork_right == 1)
-		{
-			((t_args *)args)->alive[p_index] = philo_eat(&last_eat_time, args);
-			if (!((t_args *)args)->alive[p_index])
-				break ;
-			if (n_must_eat >= 0 && ((t_args *)args)->number_eaten[p_index] >= n_must_eat)///////
-				break ;/////////////////////////////////////////////////////////////////////////
-		}
-		/*----------------philo eat--------------------------*/
-
-		/*----------------return forks--------------------------*/
-		pthread_mutex_lock(&mutex);//------
-		return_fork_right(&fork_right, args);
-		return_fork_left(&fork_left, args);
-		pthread_mutex_unlock(&mutex);//-------
-		/*----------------return forks--------------------------*/
-
-		/*----------------philo sleep--------------------------*/
-		((t_args *)args)->alive[p_index] = philo_sleep(last_eat_time, args);
-		if (!((t_args *)args)->alive[p_index])
-			break;
-		/*----------------philo sleep--------------------------*/
-
-		/*----------------philo think--------------------------*/
-		((t_args *)args)->alive[p_index] = philo_think(last_eat_time, &fork_right, &fork_left, args);
-		if (!((t_args *)args)->alive[p_index])
-			break;
-		/*----------------philo think--------------------------*/
-	}
-	return (NULL);
-}
-
-int	check_sim_end(void *args)
-{
-	int	sim_end_flag;
-
-	sim_end_flag = 0;
-	sim_end_flag = *(((t_args *)args)->sim_end);
-	return (sim_end_flag);
-}
-
-int check_alive(void *args_monitor)
-{
-	int i;
-	int num;
-
-	num = ((t_args_monitor *)args_monitor)->number_of_philosophers;
-	i = 0;
-	while (i < num)
-	{
-		if (((t_args_monitor *)args_monitor)->alive[i] == 0)
-			return (0);
+		mutex_forks[i] = malloc(sizeof(pthread_mutex_t));
+		pthread_mutex_init(mutex_forks[i], NULL);
 		i++;
 	}
-	return (1);
+	return (mutex_forks);
 }
 
-void	*monitor_func(void *args_monitor)
+int	*init_fork_on_table(int num_philo)
 {
-	while(1)
-	{
-		if (!check_alive(args_monitor))
-		{
-			*(((t_args_monitor *)args_monitor)->sim_end) = 1;
-			break ;
-		}
-		usleep(WAIT_INTERVAL_MONITOR);
-	}
-	//printf("SIMULATION STOP!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-	return (NULL);
-}
+	int		i;
+	int		*fork_ontable;
 
-void init_vars(t_args *args, int ac, char **av, int i, pthread_mutex_t *mutex, int *fork_ontable, int *alive, int *sim_end)
-{
-	int	num_philos = ft_atoi(av[1]);
-
-	args->philo_index = i;
-	args->number_of_philosophers = num_philos;
-	args->time_to_die = ft_atoi(av[2]) * 1000;
-	args->time_to_eat = ft_atoi(av[3]) * 1000;
-	args->time_to_sleep = ft_atoi(av[4]) * 1000;
-	if (ac == 6)
-		args->number_of_times_each_philosopher_must_eat = ft_atoi(av[5]);
-	else if (ac == 5)
-		args->number_of_times_each_philosopher_must_eat = -1;
-	/*----------------initialize num eaten--------------------------*/
-	int j = 0;////////////////////////////////////////////////////////////////////
-	int	*number_eaten = malloc(sizeof(int) * num_philos);///////////////////////
-	if (!number_eaten)/////////////////////////////////////////////////////////
-		return ;//free;
-	while(j < num_philos)
-	{
-		number_eaten[j] = 1;
-		j++;
-	}
-	/*----------------initialize num eaten--------------------------*/
-	
-	args->number_eaten = 0;
-	args->sim_end = sim_end;
-	args->start_time = now_time();
-	args->mutex = mutex;
-	args->fork_ontable = fork_ontable; //////////////////////?????????????????????????????
-	args->alive = alive;
-}
-
-void init_vars_monitor(t_args_monitor *args_monitor, pthread_mutex_t *mutex, int *alive, int *sim_end, int num)
-{
-	args_monitor->sim_end = sim_end;
-	args_monitor->mutex = mutex;
-	args_monitor->alive = alive;
-	args_monitor->number_of_philosophers = num;
-}
-
-int	main(int ac, char **av)
-{
-	pthread_mutex_t mutex;
-	pthread_mutex_init(&mutex, NULL);
-	
-	int	sim_end = 0;
-	
-	/*----------------check_input_error--------------------------*/
-	if (input_error(ac, av))
-		return (1);
-	/*----------------check_input_error--------------------------*/
-
-	int	num_philo = ft_atoi(av[1]);
-
-	void	**arg_tab; ///MAKE ARG_TAB ON STACK
-	arg_tab = (void **)malloc(sizeof(t_args) * (num_philo + 1));
-	if (arg_tab == NULL)
-		return (1);
-
-	/*----------------initialize forks on the table--------------------------*/
-	int	*fork_ontable = malloc(sizeof(int) * num_philo);
+	fork_ontable = malloc(sizeof(int) * num_philo);
 	if (!fork_ontable)
-		return (1);
-	
-	int j = 0;
-	while (j < num_philo)
+		return (NULL);
+	i = 0;
+	while (i < num_philo)
 	{
-		fork_ontable[j] = 1;
-		j++;
+		fork_ontable[i] = 1;
+		i++;
 	}
-	/*----------------initialize forks on the table--------------------------*/
+	return (fork_ontable);
+}
 
-	/*----------------Set_vars_for_each_philo--------------------------*/
-	int i = 0;////////////////////////////////////////////////////////////////////
-	int	*alive = malloc(sizeof(int) * num_philo);///////////////////////
-	if (!alive)/////////////////////////////////////////////////////////
-	{
-		//free;
-		return (1);
-	}
+int	*init_philo_alive(int num_philo)
+{
+	int i;
+	int	*alive;
+	i = 0;
+	alive = malloc(sizeof(int) * num_philo);
+	if (!alive)
+		return (NULL);
 	while(i < num_philo)
 	{
 		alive[i] = 1;
 		i++;
 	}
+	return (alive);
+}
+
+int *init_num_eaten(int num_philo)
+{
+	int i;
+	int	*number_eaten;
+
+	number_eaten = malloc(sizeof(int) * num_philo);
+	i = 0;
+	if (!number_eaten)
+		return (NULL);
+	while(i < num_philo)
+	{
+		number_eaten[i] = 0;
+		i++;
+	}
+	return (number_eaten);
+}
+
+void init_vars_setup(t_args *args, char **av, int i)
+{
+	args->philo_index = i;
+	args->number_of_philosophers = ft_atoi(av[1]);
+	args->time_to_die = ft_atoi(av[2]) * 1000;
+	args->time_to_eat = ft_atoi(av[3]) * 1000;
+	args->time_to_sleep = ft_atoi(av[4]) * 1000;
+}
+
+void init_vars_shared(t_args *args, pthread_mutex_t *mutex_printf, pthread_mutex_t **mutex_forks, int *alive, int *fork_ontable)
+{
+	args->mutex_printf = mutex_printf;
+	args->number_eaten = 0;
+	args->mutex_fork = mutex_forks;
+	if (!args->mutex_fork)
+		return ; /////////////protect
+	args->fork_ontable = fork_ontable; /////////////////////protect
+	args->alive = alive;
+}
+
+void init_sim_state(t_args *args, int *sim_end, time_t start_time, int num_must_eat, int *number_eaten)
+{
+	args->sim_end = sim_end;
+	args->start_time = start_time;
+	args->number_of_times_each_philosopher_must_eat = num_must_eat;
+	args->number_eaten = number_eaten;
+}
+
+void init_vars_monitor(t_args_monitor *args_monitor, pthread_mutex_t *mutex_printf, int *alive, int *sim_end,int num_must_eat, int *number_eaten, int num)
+{
+	args_monitor->sim_end = sim_end;
+	args_monitor->mutex_printf = mutex_printf;
+	args_monitor->alive = alive;
+	args_monitor->number_must_eat = num_must_eat;
+	args_monitor->number_eaten = number_eaten;
+	args_monitor->number_of_philosophers = num;
+}
+
+void destroy_mutex_forks(int num_philo, pthread_mutex_t **mutex_forks)
+{
+	int i = 0;
+
+	while (i < num_philo)
+	{
+		pthread_mutex_destroy(mutex_forks[i]);
+		i++;
+	}
+}
+
+
+void	simulation(int ac, char **av)
+{
+	int num_must_eat;
+	if (ac == 6)
+		num_must_eat = ft_atoi(av[5]);
+	else if (ac == 5)
+		num_must_eat = -1;
+
+	time_t start_time;
+
+	start_time = now_time();
+	int	num_philo = ft_atoi(av[1]);
+	pthread_mutex_t mutex_printf;
+	pthread_mutex_init(&mutex_printf, NULL);
+
+	int i = 0;
+	int	sim_end = 0;
+	int	*fork_ontable = init_fork_on_table(num_philo);
+	int	*alive = init_philo_alive(num_philo);
+	int *number_eaten = init_num_eaten(num_philo);
+	pthread_mutex_t **mutex_forks = init_mutex_forks(num_philo);
+	/*----------------Set_vars_for_each_philo--------------------------*/
+	void	**arg_tab; ///MAKE ARG_TAB 
+	arg_tab = (void **)malloc(sizeof(t_args) * (num_philo + 1));
+	if (arg_tab == NULL)
+		return (1);
+
 	i = 0;
 	while (i < num_philo)
 	{
@@ -207,18 +165,27 @@ int	main(int ac, char **av)
 			free_tab(arg_tab);
 			return (1);
 		}
-		init_vars((t_args *)arg_tab[i], ac, av, i, &mutex, fork_ontable, alive, &sim_end);
+		init_vars_setup((t_args *)arg_tab[i], av, i);
+		init_vars_shared((t_args *)arg_tab[i], &mutex_printf, mutex_forks, alive, fork_ontable);
+		init_sim_state((t_args *)arg_tab[i], &sim_end, start_time, num_must_eat, number_eaten);
 		i++;
 	}
 	arg_tab[i] = NULL;
+	/*----------------Set_vars_for_each_philo--------------------------*/
 	/*----------------Create_threads--------------------------*/
-	pthread_t	philo[num_philo];
+	
 	pthread_t	monitor;
 	t_args_monitor monitor_vars;
 
-	init_vars_monitor(&monitor_vars, &mutex, alive, &sim_end, 5);//ft_atoi(av[1]));
+	init_vars_monitor(&monitor_vars, &mutex_printf, alive, &sim_end, num_must_eat, number_eaten, num_philo);//ft_atoi(av[1]));
 	pthread_create(&monitor, NULL, &monitor_func, &monitor_vars);
 
+
+	pthread_t	*philo;
+
+	philo = malloc(sizeof(pthread_t) * num_philo);
+	if (!philo)
+		return (1);
 	i = 0;
 	while (i < num_philo)
 	{
@@ -237,9 +204,19 @@ int	main(int ac, char **av)
 	}
 	
 	/*----------------Join_threads--------------------------*/
-	pthread_mutex_destroy(&mutex);
+	destroy_mutex_forks(num_philo, mutex_forks);
+	/////pthread_mutex_destroy(&mutex_forks[k]);
 	free_tab(arg_tab);//need to free tab
 	free(fork_ontable);
+}
+
+int	main(int ac, char **av)
+{
+	/*----------------check_input_error--------------------------*/
+	if (input_error(ac, av))
+		return (1);
+	/*----------------check_input_error--------------------------*/
+	
 	
 	return (0);
 }

@@ -30,8 +30,11 @@ int philo_eat(time_t *last_eat_time, void *args)
 
 	*last_eat_time = start_eat_time;
 
-	if (now_time() - *last_eat_time + 5 < time_to_die)
-		return (1);
+	// if (now_time() - *last_eat_time + 5 + ((t_args *)args)->time_to_sleep < time_to_die)
+	// 	return (1);
+
+	// if (now_time() - *last_eat_time + 5 + ((t_args *)args)->time_to_sleep < time_to_die)
+	// 	return (1);
 
 	if (check_sim_end(args))
 		return (0);
@@ -104,3 +107,6 @@ int philo_think(time_t last_eat_time, int *fork_right, int *fork_left, void *arg
 	}
 	return (1);
 }
+
+
+//(now_time() - last_eat_time + ((t_args *)args)->time_to_sleep - 10 > ((t_args *)args)->time_to_die)
