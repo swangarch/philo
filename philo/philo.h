@@ -31,6 +31,10 @@
 #define THINK 3
 #define DEAD 4
 
+#define _DEAD 0
+#define _ALIVE 1
+#define _SIMEND 2
+
 typedef struct s_setup
 {
 	int	number_of_philosophers;

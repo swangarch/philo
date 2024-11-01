@@ -39,7 +39,7 @@ int check_alive(void *args_monitor)
 	i = 0;
 	while (i < num)
 	{
-		if (((t_args_monitor *)args_monitor)->alive[i] == 0)
+		if (((t_args_monitor *)args_monitor)->alive[i] == _DEAD)
 			return (0);
 		i++;
 	}
@@ -52,6 +52,7 @@ void	*monitor_func(void *args_monitor)
 	{
 		if (!check_alive(args_monitor))
 		{
+			//set all to 2
 			*(((t_args_monitor *)args_monitor)->sim_end) = 1;
 			break ;
 		}
