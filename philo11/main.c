@@ -176,6 +176,9 @@ int	create_thread(pthread_t	*philo, void **arg_tab, t_setup *set)
 	int num;
 
 	num = set->number_of_philosophers;
+	philo = malloc(sizeof(pthread_t) * num);
+	if (!philo)
+		return (0);
 	i = 0;
 	while (i < num)
 	{
@@ -185,14 +188,14 @@ int	create_thread(pthread_t	*philo, void **arg_tab, t_setup *set)
 	return (1);
 }
 
-int join_philo(pthread_t *philo, int num)
+int join_philo(pthread_t *philo, t_setup *set)
 {
 	int i;
 
 	i = 0;
-	if (!philo || num < 1)
+	if (!philo || !set)
 		return (0);
-	while (i < num)
+	while (i < set->number_of_philosophers)
 	{
 		pthread_join(philo[i], NULL);  ///check
 		i++;
@@ -209,23 +212,18 @@ int run_simulation(t_setup *set, t_state *state, t_mutex *mutexes)
 
 	/*----------------Set_vars_for_each_philo--------------------------*/
 	arg_tab = set_args_philo(set, state, mutexes); 
+
 	/*----------------Create_threads--------------------------*/
-	philo = malloc(sizeof(pthread_t) * set->number_of_philosophers);
-	if (!philo)
-		return (0);
 	init_args_monitor(&monitor_vars, set, state, mutexes);
-	monitor_vars.philo = philo;
 	pthread_create(&monitor, NULL, &monitor_func, &monitor_vars);
+	philo = NULL;
 	create_thread(philo, arg_tab, set);
 	/*----------------Create_threads--------------------------*/
 
 	/*----------------Join_threads--------------------------*/
-	
-	//join_philo(philo, set->number_of);
+	join_philo(philo, set);
 	pthread_join(monitor, NULL);
 	/*----------------Join_threads--------------------------*/
-
-	printf("SIMULATION STOP!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 
 	free_tab(arg_tab);
 	/*----------------destroy_vars--------------------------*/
@@ -247,8 +245,11 @@ int philo_simulation(int ac, char **av)
 	run_simulation(&set, &state, &mutexes);
 
 	/*----------------Join_threads--------------------------*/
-	//destroy state  //destroy setup
- 	return (0);
+	//destroy_mutex_forks(num_philo, mutex_forks);
+	/////pthread_mutex_destroy(&mutex_forks[k]);
+	//need to free tab
+	//free(fork_ontable);
+	return (0);
 }
 
 int	main(int ac, char **av)

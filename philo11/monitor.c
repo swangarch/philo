@@ -48,9 +48,6 @@ int check_alive(void *args_monitor)
 
 void	*monitor_func(void *args_monitor)
 {
-	int num;
-
-	num = ((t_args_monitor *)args_monitor)->number_of_philosophers;
 	while(1)
 	{
 		if (!check_alive(args_monitor))
@@ -67,6 +64,5 @@ void	*monitor_func(void *args_monitor)
 		usleep(WAIT_INTERVAL_MONITOR);
 	}
 	//printf("SIMULATION STOP!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-	join_philo(((t_args_monitor *)args_monitor)->philo, num);
 	return (NULL);
 }

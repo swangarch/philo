@@ -25,7 +25,7 @@ void	*philo_func(void *args)
 {
 	time_t start_time = ((t_args *)args)->start_time;
 	int p_index = ((t_args *)args)->philo_index;
-	//int n_must_eat = ((t_args *)args)->number_of_times_each_philosopher_must_eat;
+	int n_must_eat = ((t_args *)args)->number_of_times_each_philosopher_must_eat;
 	pthread_mutex_t **mutex_fork = ((t_args *)args)->mutex_fork;
 	time_t last_eat_time = start_time;
 
@@ -49,8 +49,9 @@ void	*philo_func(void *args)
 			((t_args *)args)->alive[p_index] = philo_eat(&last_eat_time, args);
 			if (!((t_args *)args)->alive[p_index])
 				break ;
-			// if (n_must_eat >= 0 && ((t_args *)args)->number_eaten[p_index] >= n_must_eat)///////
-			// 	break ;/////////////////////////////////////////////////////////////////////////
+			//printf("number of eat of philo %d is %d\n", p_index, ((t_args *)args)->number_eaten[p_index]);
+			if (n_must_eat >= 0 && ((t_args *)args)->number_eaten[p_index] >= n_must_eat)///////
+				break ;/////////////////////////////////////////////////////////////////////////
 		}
 		/*----------------philo eat--------------------------*/
 

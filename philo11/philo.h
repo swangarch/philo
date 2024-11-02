@@ -69,7 +69,6 @@ typedef struct s_args_monitor
 	int	*sim_end;
 	pthread_mutex_t *mutex_printf;
 	int *alive;
-	pthread_t *philo;
 }	t_args_monitor;
 
 int	all_digits(char *s);
@@ -102,6 +101,5 @@ void	*philo_func(void *args);
 void	*monitor_func(void *args_monitor);
 
 void    print_msg(int message, void *args);
-int join_philo(pthread_t *philo, int num);
 
 #endif
