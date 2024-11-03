@@ -21,56 +21,59 @@ int	check_sim_end(void *args)
 	return (sim_end_flag);
 }
 
+int		p_eat(time_t *last_eat_time, void *args, int fork_right, int fork_left)
+{
+	int p_index = ((t_args *)args)->philo_index;
+	int n_must_eat = ((t_args *)args)->number_of_times_each_philosopher_must_eat;
+
+	if (fork_left == 1 && fork_right == 1)
+	{
+		((t_args *)args)->alive[p_index] = philo_eat(last_eat_time, args);
+		if (!((t_args *)args)->alive[p_index])
+			return (0);
+		//printf("number of eat of philo %d is %d\n", p_index, ((t_args *)args)->number_eaten[p_index]);
+		if (n_must_eat >= 0 && ((t_args *)args)->number_eaten[p_index] >= n_must_eat)
+			return (0);
+	}
+	return (1);
+}
+
+int		p_sleep(time_t *last_eat_time, void *args)
+{
+	int p_index = ((t_args *)args)->philo_index;
+
+	((t_args *)args)->alive[p_index] = philo_sleep(*last_eat_time, args);
+		if (!((t_args *)args)->alive[p_index])
+			return (0);
+	return (1);
+}
+
+int		p_think(time_t *last_eat_time, void *args)
+{
+	int p_index = ((t_args *)args)->philo_index;
+
+	((t_args *)args)->alive[p_index] = philo_think(*last_eat_time, args);
+		if (!((t_args *)args)->alive[p_index])
+			return (0);
+	return (1);
+}
+
 void	*philo_func(void *args)
 {
-	time_t start_time = ((t_args *)args)->start_time;
-	int p_index = ((t_args *)args)->philo_index;
-	//int n_must_eat = ((t_args *)args)->number_of_times_each_philosopher_must_eat;
-	pthread_mutex_t **mutex_fork = ((t_args *)args)->mutex_fork;
-	time_t last_eat_time = start_time;
-
-	/*----------------initialize forks--------------------------*/
+	time_t last_eat_time = ((t_args *)args)->start_time;
 	int fork_left = 0;
 	int fork_right = 0;
-	/*----------------initialize forks--------------------------*/
 
 	while(1)
 	{
-		/*----------------take forks--------------------------*/
-		pthread_mutex_lock(mutex_fork[p_index]);//-----
-		if (forks_available(&fork_right, &fork_left, args))
-			take_forks(&fork_right, &fork_left, args);
-		pthread_mutex_unlock(mutex_fork[p_index]);//------
-		/*----------------take forks--------------------------*/
-
-		/*----------------philo eat--------------------------*/
-		if (fork_right == 1 && fork_right == 1)
-		{
-			((t_args *)args)->alive[p_index] = philo_eat(&last_eat_time, args);
-			if (!((t_args *)args)->alive[p_index])
-				break ;
-			// if (n_must_eat >= 0 && ((t_args *)args)->number_eaten[p_index] >= n_must_eat)///////
-			// 	break ;/////////////////////////////////////////////////////////////////////////
-		}
-		/*----------------philo eat--------------------------*/
-
-		/*----------------return forks--------------------------*/
-		pthread_mutex_lock(mutex_fork[p_index]);//------
+		take_forks(&fork_right, &fork_left, args);
+		if (!p_eat(&last_eat_time, args, fork_right, fork_left))
+			break ;
 		return_forks(&fork_right, &fork_left, args);
-		pthread_mutex_unlock(mutex_fork[p_index]);//-------
-		/*----------------return forks--------------------------*/
-
-		/*----------------philo sleep--------------------------*/
-		((t_args *)args)->alive[p_index] = philo_sleep(last_eat_time, args);
-		if (!((t_args *)args)->alive[p_index])
+		if (!p_sleep(&last_eat_time, args))
 			break;
-		/*----------------philo sleep--------------------------*/
-
-		/*----------------philo think--------------------------*/
-		((t_args *)args)->alive[p_index] = philo_think(last_eat_time, &fork_right, &fork_left, args);
-		if (!((t_args *)args)->alive[p_index])
+		if (!p_think(&last_eat_time, args))
 			break;
-		/*----------------philo think--------------------------*/
 	}
 	return (NULL);
 }

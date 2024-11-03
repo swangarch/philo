@@ -67,12 +67,12 @@ int	input_error(int ac, char **av)  ///////////////check negative
 	{
 		if (int_overflow(av[i], 0, 1, 0) || !all_digits(av[i]))
 		{
-			write(2, "Error\n", 6);
+			ft_putstr_fd("Error\n", 2);
 			return (1);
 		}
 		if (ft_atoi(av[i]) <= 0)
 		{
-			write(2, "Error\n", 6);/////////////////////num of philosopher must eat, check error.
+			ft_putstr_fd("Error\n", 2);/////////////////////num of philosopher must eat, check error.
 			return (1);
 		}
 		i++;

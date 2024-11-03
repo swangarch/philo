@@ -20,13 +20,6 @@
 # include <pthread.h>
 # include <string.h>
 # include <limits.h>
-# include <unistd.h>
-# include <stdio.h>
-# include <sys/time.h>
-# include <stdlib.h>
-# include <pthread.h>
-# include <string.h>
-# include <limits.h>
 
 #define WAIT_INTERVAL 1
 #define WAIT_INTERVAL_MONITOR 1
@@ -40,7 +33,7 @@
 
 #define _DEAD 0
 #define _ALIVE 1
-//#define _SIMEND 2
+#define _SIMEND 2
 
 typedef struct s_setup
 {
@@ -50,19 +43,6 @@ typedef struct s_setup
 	int	time_to_sleep;
 	int	number_of_times_each_philosopher_must_eat;
 }	t_setup;
-
-typedef struct s_state{
-	int	*fork_ontable;
-	int	*alive;
-	int *number_eaten;
-	int *sim_end;
-	time_t start_time;
-} t_state;
-
-typedef struct s_mutex{
-	pthread_mutex_t *mutex_printf;
-	pthread_mutex_t **mutex_forks;
-} t_mutex;
 
 typedef struct s_args
 {
@@ -92,8 +72,6 @@ typedef struct s_args_monitor
 	pthread_t *philo;
 }	t_args_monitor;
 
-
-
 int	all_digits(char *s);
 int	int_overflow(const char *nptr, size_t i, int sign, long num);
 void    ft_putstr_fd(char *s, int fd);
@@ -111,29 +89,19 @@ time_t now_time(void);
 
 int	check_sim_end(void *args);
 
-int forks_available(void *args);
+int forks_available(int *fork_right, int *fork_left, void *args);
 void take_forks(int *fork_right, int *fork_left, void *args);
 void return_forks(int *fork_right, int *fork_left, void *args);
 
 int die(time_t last_eat_time, time_t time_to_die);
 int philo_eat(time_t *last_eat_time, void *args);
 int philo_sleep(time_t last_eat_time, void *args);
-int philo_think(time_t last_eat_time, void *args);
+int philo_think(time_t last_eat_time, int *fork_right, int *fork_left, void *args);
 
 void	*philo_func(void *args);
 void	*monitor_func(void *args_monitor);
 
 void    print_msg(int message, void *args);
 int join_philo(pthread_t *philo, int num);
-
-void sim_setup(int ac, char **av, t_setup *set);
-void state_setup(t_setup *set, t_state *state);
-void mutex_setup(t_setup *set, t_mutex *mutexes);
-
-void init_args_philo(t_args *args, t_setup *set, t_state *state, t_mutex *mutex);
-void **set_args_philo(t_setup *set, t_state *state, t_mutex *mutexes);
-void init_args_monitor(t_args_monitor *args_monitor, t_setup *set, t_state *state, t_mutex *mutex);
-
-void destroy_mutex_forks(int num_philo, pthread_mutex_t **mutex_forks);
 
 #endif

@@ -67,7 +67,7 @@ int philo_sleep(time_t last_eat_time, void *args)
 	return (1);
 }
 
-int philo_think(time_t last_eat_time, void *args)
+int philo_think(time_t last_eat_time, int *fork_right, int *fork_left, void *args)
 {
 	int		time_to_die = ((t_args *)args)->time_to_die;
 	// int		time_to_sleep = ((t_args *)args)->time_to_sleep;
@@ -75,6 +75,7 @@ int philo_think(time_t last_eat_time, void *args)
 
 	if (check_sim_end(args))
 			return (0);
+	
 	print_msg(THINK, args);
 	while (1)
 	{
@@ -82,7 +83,7 @@ int philo_think(time_t last_eat_time, void *args)
 			return (0);
 		if (die(last_eat_time, time_to_die))
 			return(print_msg(DEAD, args), 0);
-		if	(forks_available(args))// && now_time() - last_eat_time > time_to_eat + time_to_sleep)/////lock
+		if	(forks_available(fork_right, fork_left, args))// && now_time() - last_eat_time > time_to_eat + time_to_sleep)/////lock
 			return(1);
 		usleep(WAIT_INTERVAL);
 	}

@@ -46,21 +46,6 @@ int check_alive(void *args_monitor)
 	return (1);
 }
 
-int join_philo(pthread_t *philo, int num)
-{
-	int i;
-
-	i = 0;
-	if (!philo || num < 1)
-		return (0);
-	while (i < num)
-	{
-		pthread_join(philo[i], NULL);  ///check
-		i++;
-	}
-	return (1);
-}
-
 void	*monitor_func(void *args_monitor)
 {
 	int num;
@@ -70,6 +55,7 @@ void	*monitor_func(void *args_monitor)
 	{
 		if (!check_alive(args_monitor))
 		{
+			//set all to 2
 			*(((t_args_monitor *)args_monitor)->sim_end) = 1;
 			break ;
 		}
@@ -80,6 +66,7 @@ void	*monitor_func(void *args_monitor)
 		}
 		usleep(WAIT_INTERVAL_MONITOR);
 	}
+	//printf("SIMULATION STOP!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 	join_philo(((t_args_monitor *)args_monitor)->philo, num);
 	return (NULL);
 }

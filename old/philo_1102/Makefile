@@ -16,7 +16,7 @@ CC = cc -g
 
 CFLAGS = -Wall -Wextra -Werror 
 
-SRCS = main.c check_input.c philo_utils.c take_forks.c philo_action.c monitor.c philo_func.c print_msg.c setup.c init.c free.c
+SRCS = main.c check_input.c philo_utils.c take_forks.c philo_action.c monitor.c philo_func.c print_msg.c
 
 OBJS = $(SRCS:.c=.o)
 

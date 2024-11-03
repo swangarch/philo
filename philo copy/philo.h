@@ -20,16 +20,9 @@
 # include <pthread.h>
 # include <string.h>
 # include <limits.h>
-# include <unistd.h>
-# include <stdio.h>
-# include <sys/time.h>
-# include <stdlib.h>
-# include <pthread.h>
-# include <string.h>
-# include <limits.h>
 
 #define WAIT_INTERVAL 1
-#define WAIT_INTERVAL_MONITOR 1
+#define WAIT_INTERVAL_MONITOR 0
 #define TIME_TO_THINK 1000//////////////////////XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 #define FORK 0
@@ -111,14 +104,14 @@ time_t now_time(void);
 
 int	check_sim_end(void *args);
 
-int forks_available(void *args);
+int forks_available(int *fork_right, int *fork_left, void *args);
 void take_forks(int *fork_right, int *fork_left, void *args);
 void return_forks(int *fork_right, int *fork_left, void *args);
 
 int die(time_t last_eat_time, time_t time_to_die);
 int philo_eat(time_t *last_eat_time, void *args);
 int philo_sleep(time_t last_eat_time, void *args);
-int philo_think(time_t last_eat_time, void *args);
+int philo_think(time_t last_eat_time, int *fork_right, int *fork_left, void *args);
 
 void	*philo_func(void *args);
 void	*monitor_func(void *args_monitor);

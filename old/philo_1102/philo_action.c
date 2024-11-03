@@ -37,7 +37,10 @@ int philo_eat(time_t *last_eat_time, void *args)
 		if (check_sim_end(args))
 			return (0);
 		if (die(*last_eat_time, time_to_die))
-			return(print_msg(DEAD, args), 0);
+		{
+			print_msg(DEAD, args);
+			return(0);
+		}
 		usleep(WAIT_INTERVAL);
 		current_time = now_time();
 	}
@@ -49,41 +52,50 @@ int philo_sleep(time_t last_eat_time, void *args)
 {
 	time_t start_sleep_time = now_time();
 	time_t current_time = start_sleep_time;
+
 	int 	time_to_die = ((t_args *)args)->time_to_die;
 	int		time_to_sleep = ((t_args *)args)->time_to_sleep;
 
 	if (check_sim_end(args))
 			return (0);
+	
 	print_msg(SLEEP, args);
 	while ((current_time - start_sleep_time) < time_to_sleep)
 	{
 		if (check_sim_end(args))
 			return (0);
 		if (die(last_eat_time, time_to_die))
-			return(print_msg(DEAD, args), 0);
+		{
+			print_msg(DEAD, args);
+			return(0);
+		}
 		usleep(WAIT_INTERVAL);
 		current_time = now_time();
 	}
 	return (1);
 }
 
-int philo_think(time_t last_eat_time, void *args)
+int philo_think(time_t last_eat_time, int *fork_right, int *fork_left, void *args)
 {
 	int		time_to_die = ((t_args *)args)->time_to_die;
-	// int		time_to_sleep = ((t_args *)args)->time_to_sleep;
-	// int		time_to_eat = ((t_args *)args)->time_to_eat;
 
 	if (check_sim_end(args))
 			return (0);
+	
 	print_msg(THINK, args);
 	while (1)
 	{
 		if (check_sim_end(args))
 			return (0);
 		if (die(last_eat_time, time_to_die))
-			return(print_msg(DEAD, args), 0);
-		if	(forks_available(args))// && now_time() - last_eat_time > time_to_eat + time_to_sleep)/////lock
+		{
+			print_msg(DEAD, args);
+			return(0);
+		}
+		if	(forks_available(fork_right, fork_left, args))
+		{
 			return(1);
+		}
 		usleep(WAIT_INTERVAL);
 	}
 	return (1);
