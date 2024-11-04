@@ -28,8 +28,8 @@
 # include <string.h>
 # include <limits.h>
 
-#define WAIT_INTERVAL 1
-#define WAIT_INTERVAL_MONITOR 1
+#define WAIT_INTERVAL 500
+#define WAIT_INTERVAL_MONITOR 500
 #define TIME_TO_THINK 1000//////////////////////XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 #define FORK 0
@@ -45,9 +45,9 @@
 typedef struct s_setup
 {
 	int	number_of_philosophers;
-	int	time_to_die;
-	int	time_to_eat;
-	int	time_to_sleep;
+	time_t	time_to_die;
+	time_t	time_to_eat;
+	time_t	time_to_sleep;
 	int	number_of_times_each_philosopher_must_eat;
 }	t_setup;
 
@@ -68,9 +68,9 @@ typedef struct s_args
 {
 	int	philo_index;
 	int	number_of_philosophers;
-	int	time_to_die;
-	int	time_to_eat;
-	int	time_to_sleep;
+	time_t	time_to_die;
+	time_t	time_to_eat;
+	time_t	time_to_sleep;
 	int	number_of_times_each_philosopher_must_eat;
 	int	*number_eaten;
 	int	*sim_end;

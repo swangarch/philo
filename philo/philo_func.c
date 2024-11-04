@@ -16,7 +16,7 @@ int	check_sim_end(void *args)
 {
 	int	sim_end_flag;
 
-	sim_end_flag = 0;
+	// sim_end_flag = 0;
 	sim_end_flag = *(((t_args *)args)->sim_end);
 	return (sim_end_flag);
 }
@@ -24,15 +24,11 @@ int	check_sim_end(void *args)
 int		p_eat(time_t *last_eat_time, void *args, int fork_right, int fork_left)
 {
 	int p_index = ((t_args *)args)->philo_index;
-	int n_must_eat = ((t_args *)args)->number_of_times_each_philosopher_must_eat;
 
 	if (fork_left == 1 && fork_right == 1)
 	{
 		((t_args *)args)->alive[p_index] = philo_eat(last_eat_time, args);
 		if (!((t_args *)args)->alive[p_index])
-			return (0);
-		//printf("number of eat of philo %d is %d\n", p_index, ((t_args *)args)->number_eaten[p_index]);
-		if (n_must_eat >= 0 && ((t_args *)args)->number_eaten[p_index] >= n_must_eat)
 			return (0);
 	}
 	return (1);
