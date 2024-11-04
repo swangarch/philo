@@ -28,9 +28,8 @@
 # include <string.h>
 # include <limits.h>
 
-#define WAIT_INTERVAL 500
-#define WAIT_INTERVAL_MONITOR 500
-#define TIME_TO_THINK 1000//////////////////////XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#define WAIT_INTERVAL 10
+#define WAIT_INTERVAL_MONITOR 10
 
 #define FORK 0
 #define EAT 1
@@ -40,7 +39,6 @@
 
 #define _DEAD 0
 #define _ALIVE 1
-//#define _SIMEND 2
 
 typedef struct s_setup
 {
@@ -92,8 +90,6 @@ typedef struct s_args_monitor
 	pthread_t *philo;
 }	t_args_monitor;
 
-
-
 int	all_digits(char *s);
 int	int_overflow(const char *nptr, size_t i, int sign, long num);
 void    ft_putstr_fd(char *s, int fd);
@@ -101,7 +97,6 @@ int	input_error(int ac, char **av);
 int ft_atoi(const char *nptr);
 int	input_error(int ac, char **av);
 size_t	ft_strlen(const char *s);
-//void init_vars(t_args *args, int ac, char **av, int i, pthread_mutex_t *mutex_printf, int *alive, int *sim_end, time_t start_time);
 void	free_tab(void **tab);
 
 time_t	t_interval(time_t t_begin, time_t t_end);
@@ -134,6 +129,8 @@ void init_args_philo(t_args *args, t_setup *set, t_state *state, t_mutex *mutex)
 void **set_args_philo(t_setup *set, t_state *state, t_mutex *mutexes);
 void init_args_monitor(t_args_monitor *args_monitor, t_setup *set, t_state *state, t_mutex *mutex);
 
-void destroy_mutex_forks(int num_philo, pthread_mutex_t **mutex_forks);
+void destroy_mutex_forks(pthread_mutex_t **mutex_forks, int num);
+void destroy_mutexes(t_mutex *mutexes, int num);
+void destroy_state(t_state *state);
 
 #endif

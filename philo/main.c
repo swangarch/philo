@@ -44,16 +44,11 @@ int run_simulation(t_setup *set, t_state *state, t_mutex *mutexes)
 	monitor_vars.philo = philo;
 	pthread_create(&monitor, NULL, &monitor_func, &monitor_vars);
 	create_thread(philo, arg_tab, set);
-	/*----------------Create_threads--------------------------*/
-
-	/*----------------Join_threads--------------------------*/
 	pthread_join(monitor, NULL);
-	/*----------------Join_threads--------------------------*/
 
 	//printf("SIMULATION STOP!!!!!\n");
-
 	free_tab(arg_tab);
-	/*----------------destroy_vars--------------------------*/
+	free(philo);
 	return (1);
 }
 
@@ -68,11 +63,10 @@ int philo_simulation(int ac, char **av)
 	state_setup(&set, &state);
 	mutex_setup(&set, &mutexes);
 
-	/*----------------Set_vars_for_each_philo--------------------------*/
 	run_simulation(&set, &state, &mutexes);
 
-	/*----------------Join_threads--------------------------*/
-	//destroy state  //destroy setup
+	destroy_mutexes(&mutexes, set.number_of_philosophers);
+	destroy_state(&state);
  	return (0);
 }
 

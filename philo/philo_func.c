@@ -16,7 +16,6 @@ int	check_sim_end(void *args)
 {
 	int	sim_end_flag;
 
-	// sim_end_flag = 0;
 	sim_end_flag = *(((t_args *)args)->sim_end);
 	return (sim_end_flag);
 }
@@ -60,16 +59,23 @@ void	*philo_func(void *args)
 	int fork_left = 0;
 	int fork_right = 0;
 
-	while(1)
+	if (((t_args *)args)->number_of_philosophers % 2 == 1)
 	{
 		take_forks(&fork_right, &fork_left, args);
 		if (!p_eat(&last_eat_time, args, fork_right, fork_left))
-			break ;
+			return (NULL);
 		return_forks(&fork_right, &fork_left, args);
+	}
+	while(1)
+	{
 		if (!p_sleep(&last_eat_time, args))
 			break;
 		if (!p_think(&last_eat_time, args))
 			break;
+		take_forks(&fork_right, &fork_left, args);
+		if (!p_eat(&last_eat_time, args, fork_right, fork_left))
+			break ;
+		return_forks(&fork_right, &fork_left, args);
 	}
 	return (NULL);
 }

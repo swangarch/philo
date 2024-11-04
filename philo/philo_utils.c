@@ -52,22 +52,6 @@ int ft_atoi(const char *nptr)
 	return (sign * num);
 }
 
-void	free_tab(void **tab)
-{
-	int	i;
-
-	i = 0;
-	if (tab == NULL)
-		return ;
-	while (tab[i])
-	{
-		free(tab[i]);
-		i++;
-	}
-	free(tab);
-	tab = NULL;
-}
-
 time_t	t_interval(time_t t_begin, time_t t_end)
 {
 	return (t_end - t_begin);
