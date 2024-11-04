@@ -87,7 +87,7 @@ time_t	t_ms(struct timeval *tv)
 	return (time_ms);
 }
 
-time_t now_time(void)  /////in milliseconde
+time_t now_time(void) 
 {
 	struct timeval tv;
 
