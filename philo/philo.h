@@ -30,6 +30,7 @@
 
 #define WAIT_INTERVAL 10
 #define WAIT_INTERVAL_MONITOR 10
+#define MIN_THINK_TIME 500
 
 #define FORK 0
 #define EAT 1

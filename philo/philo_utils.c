@@ -67,7 +67,6 @@ time_t	t_ms(struct timeval *tv)
 	time_t time_ms;
 
 	time_ms = tv->tv_sec * 1000000 + tv->tv_usec;
-
 	return (time_ms);
 }
 

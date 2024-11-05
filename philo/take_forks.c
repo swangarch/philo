@@ -35,12 +35,15 @@ int forks_available(void *args)
 
 void take_forks_action(int *fork_right, int *fork_left, void *args)
 {
-	int		num = ((t_args *)args)->number_of_philosophers;
-	int		p_index = ((t_args *)args)->philo_index;
-	int		**fork_ontable =  &(((t_args *)args)->fork_ontable);
-	int		l_fork_index = p_index;
-	int		r_fork_index = (p_index + 1) % num;
+	int		p_index;
+	int		**fork_ontable;
+	int		l_fork_index;
+	int		r_fork_index;
 
+	p_index = ((t_args *)args)->philo_index;
+	fork_ontable =  &(((t_args *)args)->fork_ontable);
+	l_fork_index = p_index;
+	r_fork_index = (p_index + 1) % ((t_args *)args)->number_of_philosophers;
 	if ((*fork_ontable)[r_fork_index] == 1)
 	{
 		(*fork_ontable)[r_fork_index] = 0;
@@ -57,11 +60,13 @@ void take_forks_action(int *fork_right, int *fork_left, void *args)
 
 void take_forks(int *fork_right, int *fork_left, void *args)
 {
-	int		num = ((t_args *)args)->number_of_philosophers;
-	int		p_index = ((t_args *)args)->philo_index;
-	int		l_fork_index = p_index;
-	int		r_fork_index = (p_index + 1) % num;
+	int		p_index;
+	int		l_fork_index;
+	int		r_fork_index;
 
+	p_index = ((t_args *)args)->philo_index;
+	l_fork_index = p_index;
+	r_fork_index = (p_index + 1) % ((t_args *)args)->number_of_philosophers;
 	pthread_mutex_lock(((t_args *)args)->mutex_fork[l_fork_index]);
 	pthread_mutex_lock(((t_args *)args)->mutex_fork[r_fork_index]);
 	if (forks_available(args))

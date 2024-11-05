@@ -32,11 +32,12 @@ static int	*init_tab(int num_philo, int value)
 static pthread_mutex_t **init_mutex_forks(int num_philo)
 {
 	pthread_mutex_t **mutex_forks;
+	int	i;
+
 	mutex_forks = malloc((num_philo) * sizeof(pthread_mutex_t *));
 	if (!mutex_forks)
 		return (NULL);
-
-	int i = 0;
+	i = 0;
 	while (i < num_philo)
 	{
 		mutex_forks[i] = malloc(sizeof(pthread_mutex_t));

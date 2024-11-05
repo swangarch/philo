@@ -40,11 +40,18 @@ int run_simulation(t_setup *set, t_state *state, t_mutex *mutexes)
 	philo = malloc(sizeof(pthread_t) * set->number_of_philosophers);
 	if (!philo)
 		return (write(2, "Error\n", 6), 0);
+	ft_putstr_fd("case1\n", 1);///////////////////////////
+
 	init_args_monitor(&monitor_vars, set, state, mutexes);
+	ft_putstr_fd("case2\n", 1);//////////////////////////
 	monitor_vars.philo = philo;
+	ft_putstr_fd("case3\n", 1);//////////////////////////
 	pthread_create(&monitor, NULL, &monitor_func, &monitor_vars);
+	ft_putstr_fd("case4\n", 1);/////////////////////////////
 	create_thread(philo, arg_tab, set);
+	ft_putstr_fd("case5\n", 1);////////////////////////////
 	pthread_join(monitor, NULL);
+	ft_putstr_fd("case6\n", 1);////////////////////////////
 
 	//printf("SIMULATION STOP!!!!!\n");
 	free_tab(arg_tab);

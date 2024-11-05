@@ -77,11 +77,12 @@ int philo_think(time_t last_eat_time, void *args)
 	print_msg(THINK, args);
 	while (1)
 	{
+		//ft_putstr_fd("CHECK\n", 1);
 		if (check_sim_end(args))
 			return (0);
 		if (die(last_eat_time, time_to_die))
 			return(print_msg(DEAD, args), 0);
-		if	(now_time() - start_think_time > 2000)
+		if	(now_time() - start_think_time > MIN_THINK_TIME)
 		{
 			if (forks_available(args))
 				return(1);

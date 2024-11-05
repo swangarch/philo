@@ -32,6 +32,5 @@ void    print_msg(int message, void *args)
         printf("%ld %d is thinking\n", time_stamp, idx + 1);
     else if (message == DEAD)
         printf("%ld %d died\n", time_stamp, idx + 1);
-    
     pthread_mutex_unlock(((t_args *)args)->mutex_printf);
 }
