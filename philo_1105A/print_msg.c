@@ -12,25 +12,25 @@
 
 #include "philo.h"
 
-void	print_msg(int message, void *args)
+void    print_msg(int message, void *args)
 {
-	time_t	start_time;
-	time_t	time_stamp;
-	int		idx;
+    time_t	start_time;
+    time_t  time_stamp;
+    int idx;
 
-	start_time = ((t_args *)args)->start_time;
-	time_stamp = timestamp(start_time);
-	idx = ((t_args *)args)->philo_index;
-	pthread_mutex_lock(((t_args *)args)->mutex_printf);
-	if (message == FORK)
-		printf("%ld %d has taken a fork\n", time_stamp, idx + 1);
-	else if (message == EAT)
-		printf("%ld %d is eating\n", time_stamp, idx + 1);
-	else if (message == SLEEP)
-		printf("%ld %d is sleeping\n", time_stamp, idx + 1);
-	else if (message == THINK)
-		printf("%ld %d is thinking\n", time_stamp, idx + 1);
-	else if (message == DEAD)
-		printf("%ld %d died\n", time_stamp, idx + 1);
-	pthread_mutex_unlock(((t_args *)args)->mutex_printf);
+    start_time = ((t_args *)args)->start_time;
+    time_stamp = timestamp(start_time);
+    idx = ((t_args *)args)->philo_index;
+    pthread_mutex_lock(((t_args *)args)->mutex_printf);
+    if (message == FORK)
+        printf("%ld %d has taken a fork\n", time_stamp, idx + 1);
+    else if (message == EAT)
+	    printf("%ld %d is eating\n", time_stamp, idx + 1);
+    else if (message == SLEEP)
+        printf("%ld %d is sleeping\n", time_stamp, idx + 1);
+    else if (message == THINK)
+        printf("%ld %d is thinking\n", time_stamp, idx + 1);
+    else if (message == DEAD)
+        printf("%ld %d died\n", time_stamp, idx + 1);
+    pthread_mutex_unlock(((t_args *)args)->mutex_printf);
 }

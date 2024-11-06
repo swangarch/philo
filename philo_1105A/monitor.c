@@ -19,7 +19,7 @@ int check_all_eat_enough(void *args_monitor)
 
 	i = 0;
 	num = ((t_args_monitor *)args_monitor)->number_of_philosophers;
-	if (((t_args_monitor *)args_monitor)->number_must_eat < 0)
+	if ( ((t_args_monitor *)args_monitor)->number_must_eat < 0)
 			return (0);
 	while (i < num)
 	{
@@ -68,6 +68,7 @@ void	*monitor_func(void *args_monitor)
 	num = ((t_args_monitor *)args_monitor)->number_of_philosophers;
 	while(1)
 	{
+		ft_putstr_fd("case7\n", 1);
 		if (!check_alive(args_monitor))
 		{
 			*(((t_args_monitor *)args_monitor)->sim_end) = 1;

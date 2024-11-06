@@ -28,7 +28,7 @@ void	free_tab(void **tab)
 	tab = NULL;
 }
 
-void	destroy_state(t_state *state)
+void destroy_state(t_state *state)
 {
 	free(state->fork_ontable);
 	free(state->alive);
@@ -36,11 +36,10 @@ void	destroy_state(t_state *state)
 	free(state->sim_end);
 }
 
-void	destroy_mutex_forks(pthread_mutex_t **mutex_forks, int num)
+void destroy_mutex_forks(pthread_mutex_t **mutex_forks, int num)
 {
-	int	i;
+	int i = 0;
 
-	i = 0;
 	while (i < num)
 	{
 		pthread_mutex_destroy(mutex_forks[i]);
@@ -51,12 +50,12 @@ void	destroy_mutex_forks(pthread_mutex_t **mutex_forks, int num)
 	free(mutex_forks);
 }
 
-void	destroy_mutex_printf(pthread_mutex_t *mutex_printf)
+void destroy_mutex_printf(pthread_mutex_t *mutex_printf)
 {
 	pthread_mutex_destroy(mutex_printf);
 }
 
-void	destroy_mutexes(t_mutex *mutexes, int num)
+void destroy_mutexes(t_mutex *mutexes, int num)
 {
 	destroy_mutex_forks(mutexes->mutex_forks, num);
 	destroy_mutex_printf(mutexes->mutex_printf);

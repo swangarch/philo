@@ -58,44 +58,21 @@ void take_forks_action(int *fork_right, int *fork_left, void *args)
 	print_msg(FORK, args);
 }
 
-void lock_mutex_fork(void *args)
+void take_forks(int *fork_right, int *fork_left, void *args)
 {
-	int 	num;
 	int		p_index;
 	int		l_fork_index;
 	int		r_fork_index;
 
-	num = ((t_args *)args)->number_of_philosophers;
 	p_index = ((t_args *)args)->philo_index;
 	l_fork_index = p_index;
 	r_fork_index = (p_index + 1) % ((t_args *)args)->number_of_philosophers;
 	pthread_mutex_lock(((t_args *)args)->mutex_fork[l_fork_index]);
-	if (num > 1)
-		pthread_mutex_lock(((t_args *)args)->mutex_fork[r_fork_index]);
-}
-
-void unlock_mutex_fork(void *args)
-{
-	int 	num;
-	int		p_index;
-	int		l_fork_index;
-	int		r_fork_index;
-
-	num = ((t_args *)args)->number_of_philosophers;
-	p_index = ((t_args *)args)->philo_index;
-	l_fork_index = p_index;
-	r_fork_index = (p_index + 1) % ((t_args *)args)->number_of_philosophers;
-	if (num > 1)
-		pthread_mutex_unlock(((t_args *)args)->mutex_fork[r_fork_index]);
-	pthread_mutex_unlock(((t_args *)args)->mutex_fork[l_fork_index]);
-}
-
-void take_forks(int *fork_right, int *fork_left, void *args)
-{
-	lock_mutex_fork(args);
+	pthread_mutex_lock(((t_args *)args)->mutex_fork[r_fork_index]);
 	if (forks_available(args))
 		take_forks_action(fork_right, fork_left, args);
-	unlock_mutex_fork(args);
+	pthread_mutex_unlock(((t_args *)args)->mutex_fork[r_fork_index]);
+	pthread_mutex_unlock(((t_args *)args)->mutex_fork[l_fork_index]);
 }
 
 void return_forks(int *fork_right, int *fork_left, void *args)
@@ -109,7 +86,8 @@ void return_forks(int *fork_right, int *fork_left, void *args)
 	int		l_fork_index = p_index;
 	int		r_fork_index = (p_index + 1) % num;
 
-	lock_mutex_fork(args);
+	pthread_mutex_lock(((t_args *)args)->mutex_fork[l_fork_index]);
+	pthread_mutex_lock(((t_args *)args)->mutex_fork[r_fork_index]);
 	fork_ontable =  &(((t_args *)args)->fork_ontable);
 	if (*fork_right == 1)
 	{
@@ -127,5 +105,6 @@ void return_forks(int *fork_right, int *fork_left, void *args)
 			*fork_left = 0;
 		}
 	}
-	unlock_mutex_fork(args);
+	pthread_mutex_unlock(((t_args *)args)->mutex_fork[r_fork_index]);
+	pthread_mutex_unlock(((t_args *)args)->mutex_fork[l_fork_index]);
 }

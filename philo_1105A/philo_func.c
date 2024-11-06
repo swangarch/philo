@@ -24,15 +24,10 @@ int		p_eat(time_t *last_eat_time, void *args, int *fork_right, int *fork_left)
 {
 	int p_index;
 
-	// if (((t_args *)args)->number_of_philosophers < 2)//////////?
-	// 	return (0);//////////////////////////////////?
 	p_index = ((t_args *)args)->philo_index;
 	take_forks(fork_right, fork_left, args);
-	// if (((t_args *)args)->number_of_philosophers < 2)
-	// {
-	// 	*fork_left = 1;
-	// 	*fork_right = 0;
-	// }
+	if (((t_args *)args)->number_of_philosophers < 2)//////////?
+		return (0);//////////////////////////////////?
 	if (*fork_left == 1 && *fork_right == 1)
 	{
 		((t_args *)args)->alive[p_index] = philo_eat(last_eat_time, args);

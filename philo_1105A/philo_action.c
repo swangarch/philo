@@ -22,43 +22,44 @@ int die(time_t last_eat_time, time_t time_to_die)
 
 int philo_eat(time_t *last_eat_time, void *args)
 {
-	time_t	start_eat_time;
-	time_t	current_time;
+	time_t	start_eat_time = now_time();
+	time_t	current_time = start_eat_time;
+	time_t 	time_to_die = ((t_args *)args)->time_to_die;
+	time_t		time_to_eat = ((t_args *)args)->time_to_eat;
+	int     p_index = ((t_args *)args)->philo_index;
 
-	start_eat_time = now_time();
-	current_time = start_eat_time;
 	*last_eat_time = start_eat_time;
 	if (check_sim_end(args))
 		return (0);
 	print_msg(EAT, args);
-	while ((current_time - start_eat_time) < ((t_args *)args)->time_to_eat)
+	while ((current_time - start_eat_time) < time_to_eat)
 	{
 		if (check_sim_end(args))
 			return (0);
-		if (die(*last_eat_time, ((t_args *)args)->time_to_die))
+		if (die(*last_eat_time, time_to_die))
 			return(print_msg(DEAD, args), 0);
 		usleep(WAIT_INTERVAL);
 		current_time = now_time();
 	}
-	((t_args *)args)->number_eaten[((t_args *)args)->philo_index]++;
+	((t_args *)args)->number_eaten[p_index]++;
 	return (1);
 }
 
 int philo_sleep(time_t last_eat_time, void *args)
 {
-	time_t start_sleep_time;
-	time_t current_time;
+	time_t start_sleep_time = now_time();
+	time_t current_time = start_sleep_time;
+	time_t 	time_to_die = ((t_args *)args)->time_to_die;
+	time_t		time_to_sleep = ((t_args *)args)->time_to_sleep;
 
-	start_sleep_time = now_time();
-	current_time = start_sleep_time;
 	if (check_sim_end(args))
 			return (0);
 	print_msg(SLEEP, args);
-	while ((current_time - start_sleep_time) < ((t_args *)args)->time_to_sleep)
+	while ((current_time - start_sleep_time) < time_to_sleep)
 	{
 		if (check_sim_end(args))
 			return (0);
-		if (die(last_eat_time, ((t_args *)args)->time_to_die))
+		if (die(last_eat_time, time_to_die))
 			return(print_msg(DEAD, args), 0);
 		usleep(WAIT_INTERVAL);
 		current_time = now_time();
@@ -68,36 +69,23 @@ int philo_sleep(time_t last_eat_time, void *args)
 
 int philo_think(time_t last_eat_time, void *args)
 {
-	// int		p_index;
-	// int		l_fork_index;
-	// int		r_fork_index;
-	time_t		time_to_die;
-	time_t		start_think_time;
-
-	// p_index = ((t_args *)args)->philo_index;
-	// l_fork_index = p_index;
-	// r_fork_index = (p_index + 1) % ((t_args *)args)->number_of_philosophers;
-	time_to_die = ((t_args *)args)->time_to_die;
-	start_think_time = now_time();
+	time_t		time_to_die = ((t_args *)args)->time_to_die;
+	time_t		start_think_time = now_time();
 
 	if (check_sim_end(args))
 			return (0);
 	print_msg(THINK, args);
 	while (1)
 	{
+		//ft_putstr_fd("CHECK\n", 1);
 		if (check_sim_end(args))
 			return (0);
 		if (die(last_eat_time, time_to_die))
 			return(print_msg(DEAD, args), 0);
 		if	(now_time() - start_think_time > MIN_THINK_TIME)
 		{
-			//lock_mutex_fork(args);
 			if (forks_available(args))
-			{
-				//unlock_mutex_fork(args);
 				return(1);
-			}
-			//unlock_mutex_fork(args);
 		}
 		usleep(WAIT_INTERVAL);
 	}

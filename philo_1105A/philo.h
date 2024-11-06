@@ -28,9 +28,9 @@
 # include <string.h>
 # include <limits.h>
 
-#define WAIT_INTERVAL 500
-#define WAIT_INTERVAL_MONITOR 500
-#define MIN_THINK_TIME 2000
+#define WAIT_INTERVAL 10
+#define WAIT_INTERVAL_MONITOR 10
+#define MIN_THINK_TIME 500
 
 #define FORK 0
 #define EAT 1
@@ -123,8 +123,8 @@ void    print_msg(int message, void *args);
 int join_philo(pthread_t *philo, int num);
 
 void sim_setup(int ac, char **av, t_setup *set);
-int state_setup(t_setup *set, t_state *state);
-int mutex_setup(t_setup *set, t_mutex *mutexes);
+void state_setup(t_setup *set, t_state *state);
+void mutex_setup(t_setup *set, t_mutex *mutexes);
 
 void init_args_philo(t_args *args, t_setup *set, t_state *state, t_mutex *mutex);
 void **set_args_philo(t_setup *set, t_state *state, t_mutex *mutexes);
@@ -133,9 +133,5 @@ void init_args_monitor(t_args_monitor *args_monitor, t_setup *set, t_state *stat
 void destroy_mutex_forks(pthread_mutex_t **mutex_forks, int num);
 void destroy_mutexes(t_mutex *mutexes, int num);
 void destroy_state(t_state *state);
-
-
-void lock_mutex_fork(void *args);
-void unlock_mutex_fork(void *args);
 
 #endif

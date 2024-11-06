@@ -29,10 +29,10 @@ static int	*init_tab(int num_philo, int value)
 	return (tab);
 }
 
-static pthread_mutex_t	**init_mutex_forks(int num_philo)
+static pthread_mutex_t **init_mutex_forks(int num_philo)
 {
-	pthread_mutex_t	**mutex_forks;
-	int				i;
+	pthread_mutex_t **mutex_forks;
+	int	i;
 
 	mutex_forks = malloc((num_philo) * sizeof(pthread_mutex_t *));
 	if (!mutex_forks)
@@ -41,18 +41,13 @@ static pthread_mutex_t	**init_mutex_forks(int num_philo)
 	while (i < num_philo)
 	{
 		mutex_forks[i] = malloc(sizeof(pthread_mutex_t));
-		if (!mutex_forks[i])
-		{
-			//free_mutex_forks
-			return (NULL);
-		}
 		pthread_mutex_init(mutex_forks[i], NULL);
 		i++;
 	}
 	return (mutex_forks);
 }
 
-void	sim_setup(int ac, char **av, t_setup *set)
+void sim_setup(int ac, char **av, t_setup *set)
 {
 	set->number_of_philosophers = ft_atoi(av[1]);
 	set->time_to_die = ft_atoi(av[2]) * 1000;
@@ -64,40 +59,29 @@ void	sim_setup(int ac, char **av, t_setup *set)
 		set->number_of_times_each_philosopher_must_eat = -1;
 }
 
-int	state_setup(t_setup *set, t_state *state)
+void state_setup(t_setup *set, t_state *state)
 {
-	int	num;
+	int num;
 
 	num = set->number_of_philosophers;
-	state->fork_ontable = init_tab(num, 1);
-	if (!state->fork_ontable)
-		return (0);
+	state->fork_ontable = init_tab(num, 1);  //protect
 	state->alive = init_tab(num, _ALIVE);
-	if (!state->alive)
-		return (free(state->fork_ontable), 0);
 	state->number_eaten = init_tab(num, 0);
-	if (!state->number_eaten)
-		return (free(state->fork_ontable), free(state->alive), 0);
 	state->sim_end = malloc(sizeof(int));
-	if (!state->sim_end)
-		return (free(state->fork_ontable), free(state->alive), \
-			free(state->number_eaten), 0);
+	if(!state->sim_end)
+		return ;   ///////////////////////////can be removed
 	*(state->sim_end) = 0;
 	state->start_time = now_time();
-	return (1);
 }
 
-int	mutex_setup(t_setup *set, t_mutex *mutexes)
+void mutex_setup(t_setup *set, t_mutex *mutexes)
 {
-	int	num;
+	int num;
 
 	num = set->number_of_philosophers;
 	mutexes->mutex_printf = malloc(sizeof(pthread_mutex_t));
 	if (!mutexes->mutex_printf)
-		return (0);
-	mutexes->mutex_forks = init_mutex_forks(num);
-	if (!mutexes->mutex_forks)
-		return (free(mutexes->mutex_printf), 0);
+		return ;////////////protect
 	pthread_mutex_init(mutexes->mutex_printf, NULL);
-	return (1);
+	mutexes->mutex_forks = init_mutex_forks(num);//protect
 }

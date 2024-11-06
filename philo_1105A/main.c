@@ -40,11 +40,19 @@ int run_simulation(t_setup *set, t_state *state, t_mutex *mutexes)
 	philo = malloc(sizeof(pthread_t) * set->number_of_philosophers);
 	if (!philo)
 		return (write(2, "Error\n", 6), 0);
+	ft_putstr_fd("case1\n", 1);///////////////////////////
+
 	init_args_monitor(&monitor_vars, set, state, mutexes);
+	ft_putstr_fd("case2\n", 1);//////////////////////////
 	monitor_vars.philo = philo;
+	ft_putstr_fd("case3\n", 1);//////////////////////////
 	pthread_create(&monitor, NULL, &monitor_func, &monitor_vars);
+	ft_putstr_fd("case4\n", 1);/////////////////////////////
 	create_thread(philo, arg_tab, set);
+	ft_putstr_fd("case5\n", 1);////////////////////////////
 	pthread_join(monitor, NULL);
+	ft_putstr_fd("case6\n", 1);////////////////////////////
+
 	//printf("SIMULATION STOP!!!!!\n");
 	free_tab(arg_tab);
 	free(philo);
@@ -59,23 +67,20 @@ int philo_simulation(int ac, char **av)
 	t_mutex mutexes;
 
 	sim_setup(ac, av, &set);
-	if (!state_setup(&set, &state))//destroy setup
-		return (0);
-	if (!mutex_setup(&set, &mutexes))//destroy &mutexe
-		return (0);
+	state_setup(&set, &state);
+	mutex_setup(&set, &mutexes);
 
 	run_simulation(&set, &state, &mutexes);
 
 	destroy_mutexes(&mutexes, set.number_of_philosophers);
 	destroy_state(&state);
- 	return (1);
+ 	return (0);
 }
 
 int	main(int ac, char **av)
 {
 	if (input_error(ac, av))
 		return (1);
-	if (!philo_simulation(ac, av))
-		return (write(2, "ErrorA\n", 7), 1);
+	philo_simulation(ac, av);
 	return (0);
 }

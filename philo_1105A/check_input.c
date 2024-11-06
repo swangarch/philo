@@ -53,7 +53,7 @@ int	int_overflow(const char *nptr, size_t i, int sign, long num)
 	return (0);
 }
 
-int	input_error(int ac, char **av)
+int	input_error(int ac, char **av)  ///////////////check negative
 {
 	int	i;
 
@@ -72,12 +72,12 @@ int	input_error(int ac, char **av)
 		}
 		if (ft_atoi(av[i]) <= 0)
 		{
-			write(2, "Error\n", 6);
+			write(2, "Error\n", 6);/////////////////////num of philosopher must eat, check error.
 			return (1);
 		}
 		i++;
 	}
-	return (0);
+	return(0);
 }
 /*
 int	main(void)
