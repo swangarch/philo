@@ -1,0 +1,92 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   routine.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shuwang <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/28 16:41:04 by shuwang           #+#    #+#             */
+/*   Updated: 2024/09/28 16:41:06 by shuwang          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "philo.h"
+
+int	check_sim_end(void *args)
+{
+	int	sim_end_flag;
+
+	sim_end_flag = *(((t_args *)args)->sim_end);
+	return (sim_end_flag);
+}
+
+int		p_eat(time_t *last_eat_time, void *args, int *fork_right, int *fork_left)
+{
+	int p_index;
+
+	// if (((t_args *)args)->number_of_philosophers < 2)//////////?
+	// 	return (0);//////////////////////////////////?
+	p_index = ((t_args *)args)->philo_index;
+	take_forks(fork_right, fork_left, args);
+	// if (((t_args *)args)->number_of_philosophers < 2)
+	// {
+	// 	*fork_left = 1;
+	// 	*fork_right = 0;
+	// }
+	if (*fork_left == 1 && *fork_right == 1)
+	{
+		((t_args *)args)->alive[p_index] = philo_eat(last_eat_time, args);
+		if (!((t_args *)args)->alive[p_index])
+			return (0);
+	}
+	return_forks(fork_right, fork_left, args);
+	return (1);
+}
+
+int		p_sleep(time_t *last_eat_time, void *args)
+{
+	int p_index;
+
+	p_index = ((t_args *)args)->philo_index;
+	((t_args *)args)->alive[p_index] = philo_sleep(*last_eat_time, args);
+		if (!((t_args *)args)->alive[p_index])
+			return (0);
+	return (1);
+}
+
+int		p_think(time_t *last_eat_time, void *args)
+{
+	int p_index;
+
+	p_index = ((t_args *)args)->philo_index;
+	((t_args *)args)->alive[p_index] = philo_think(*last_eat_time, args);
+		if (!((t_args *)args)->alive[p_index])
+			return (0);
+	return (1);
+}
+
+void	*philo_func(void *args)
+{
+	time_t last_eat_time;
+	int fork_left;
+	int fork_right;
+
+	last_eat_time = ((t_args *)args)->start_time;
+	fork_left = 0;
+	fork_right = 0;
+	if (((t_args *)args)->number_of_philosophers % 2 == 1)
+	{
+		if (!p_eat(&last_eat_time, args, &fork_right, &fork_left))
+			return (NULL);
+	}
+	while(1)
+	{
+		if (!p_sleep(&last_eat_time, args))
+			break;
+		if (!p_think(&last_eat_time, args))
+			break;
+		if (!p_eat(&last_eat_time, args, &fork_right, &fork_left))
+			break ;
+	}
+	return (NULL);
+}
