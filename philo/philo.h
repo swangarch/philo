@@ -28,9 +28,9 @@
 # include <string.h>
 # include <limits.h>
 
-#define WAIT_INTERVAL 10
-#define WAIT_INTERVAL_MONITOR 500
-#define MIN_THINK_TIME 2000
+#define WAIT_INTERVAL 1000
+#define WAIT_INTERVAL_MONITOR 3000
+#define MIN_THINK_TIME 5000
 
 #define FORK 0
 #define EAT 1
@@ -38,8 +38,8 @@
 #define THINK 3
 #define DEAD 4
 
-#define _DEAD 0
-#define _ALIVE 1
+#define _DEAD 1
+#define _ALIVE 0
 
 typedef struct s_setup
 {
@@ -52,7 +52,7 @@ typedef struct s_setup
 
 typedef struct s_state{
 	int	*fork_ontable;
-	int	*alive;
+	//int	*alive;
 	int *death_flag;
 	int *number_eaten;
 	//int *sim_end;
@@ -74,10 +74,9 @@ typedef struct s_args
 	time_t	time_to_sleep;
 	int	number_of_times_each_philosopher_must_eat;
 	int	*number_eaten;
-	// int	*sim_end;
 	int	*death_flag;
 	int	*fork_ontable;
-	int *alive;
+	//int *alive;
 	time_t	start_time;
 	pthread_mutex_t **mutex_fork;
 	pthread_mutex_t *mutex_printf;
@@ -90,9 +89,7 @@ typedef struct s_args_monitor
 	int number_must_eat;
 	int	*number_eaten;
 	int	*death_flag;
-	pthread_mutex_t *mutex_printf;
 	pthread_mutex_t *mutex_death;
-	int *alive;
 	pthread_t *philo;
 }	t_args_monitor;
 

@@ -31,7 +31,6 @@ void	free_tab(void **tab)
 void	destroy_state(t_state *state)
 {
 	free(state->fork_ontable);
-	free(state->alive);
 	free(state->number_eaten);
 }
 

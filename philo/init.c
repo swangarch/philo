@@ -24,10 +24,8 @@ void	init_args_philo(t_args *args, t_setup *set, t_state *state, \
 	args->number_of_times_each_philosopher_must_eat = set->\
 		number_of_times_each_philosopher_must_eat;
 	args->fork_ontable = state->fork_ontable;
-	args->alive = state->alive;
 	args->number_eaten = state->number_eaten;
 	args->death_flag = state->death_flag;
-	//args->sim_end = state->sim_end;
 	args->start_time = state->start_time;
 	args->mutex_fork = mutex->mutex_forks;
 	args->mutex_printf = mutex->mutex_printf;
@@ -63,8 +61,6 @@ void	init_args_monitor(t_args_monitor *args_monitor, t_setup *set, t_state \
 	if (!args_monitor || !set || !state || !mutex)
 		return ;
 	args_monitor->death_flag = state->death_flag;
-	args_monitor->mutex_printf = mutex->mutex_printf;
-	args_monitor->alive = state->alive;
 	args_monitor->number_must_eat = set->number_of_times_each_philosopher_must_eat;
 	args_monitor->number_eaten = state->number_eaten;
 	args_monitor->number_of_philosophers = set->number_of_philosophers;

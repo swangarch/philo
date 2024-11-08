@@ -72,15 +72,15 @@ int	state_setup(t_setup *set, t_state *state)
 	state->fork_ontable = init_tab(num, 1);
 	if (!state->fork_ontable)
 		return (0);
-	state->alive = init_tab(num, _ALIVE);
-	if (!state->alive)
-		return (free(state->fork_ontable), 0);
+	// state->alive = init_tab(num, _ALIVE);
+	// if (!state->alive)
+	// 	return (free(state->fork_ontable), 0);
 	state->number_eaten = init_tab(num, 0);
 	if (!state->number_eaten)
-		return (free(state->fork_ontable), free(state->alive), 0);
+		return (free(state->fork_ontable), 0);
 	state->death_flag = malloc(sizeof(int));
 	if (!state->death_flag)
-		return (free(state->number_eaten), free(state->fork_ontable), free(state->alive), 0);
+		return (free(state->number_eaten), free(state->fork_ontable), 0);
 	*(state->death_flag) = 0;
 	state->start_time = now_time();
 	return (1);

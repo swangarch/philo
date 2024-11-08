@@ -20,7 +20,7 @@ int	check_death_flag(void *args)
 void 	set_death_flag(void *args)
 {
 	pthread_mutex_lock(((t_args *)args)->mutex_death);
-	*(((t_args *)args))->death_flag = 1;
+	*(((t_args *)args)->death_flag) = _DEAD;
 	pthread_mutex_unlock(((t_args *)args)->mutex_death);
 }
 
@@ -45,7 +45,7 @@ void	*philo_func(void *args)
 	last_eat_time = ((t_args *)args)->start_time;
 	fork_left = 0;
 	fork_right = 0;
-	if (((t_args *)args)->number_of_philosophers % 2 == 1)
+	if (((t_args *)args)->philo_index % 2 == 1)
 	{
 		if (!take_fork_eat(&last_eat_time, args, &fork_right, &fork_left))
 			return (NULL);

@@ -44,7 +44,9 @@ int run_simulation(t_setup *set, t_state *state, t_mutex *mutexes)
 	monitor_vars.philo = philo;
 	pthread_create(&monitor, NULL, &monitor_func, &monitor_vars);
 	create_thread(philo, arg_tab, set);
+	//ft_putstr_fd("simulation start\n", 2);
 	pthread_join(monitor, NULL);
+	//ft_putstr_fd("case03\n", 2);///////////////////////////////////////////
 	free_tab(arg_tab);
 	free(philo);
 	return (1);
@@ -63,8 +65,9 @@ int philo_simulation(int ac, char **av)
 	if (!mutex_setup(&set, &mutexes))//destroy &mutexe
 		return (0);
 
+	//printf("the death state is %d\n", *(state.death_flag));////////////////////////////////////////
 	run_simulation(&set, &state, &mutexes);
-
+	//ft_putstr_fd("case02\n", 2);///////////////////////////////////////////
 	destroy_mutexes(&mutexes, set.number_of_philosophers);
 	destroy_state(&state);
  	return (1);
