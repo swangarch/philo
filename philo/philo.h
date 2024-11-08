@@ -28,7 +28,7 @@
 # include <string.h>
 # include <limits.h>
 
-#define WAIT_INTERVAL 500
+#define WAIT_INTERVAL 10
 #define WAIT_INTERVAL_MONITOR 500
 #define MIN_THINK_TIME 2000
 
@@ -53,13 +53,15 @@ typedef struct s_setup
 typedef struct s_state{
 	int	*fork_ontable;
 	int	*alive;
+	int *death_flag;
 	int *number_eaten;
-	int *sim_end;
+	//int *sim_end;
 	time_t start_time;
 } t_state;
 
 typedef struct s_mutex{
 	pthread_mutex_t *mutex_printf;
+	pthread_mutex_t *mutex_death;
 	pthread_mutex_t **mutex_forks;
 } t_mutex;
 
@@ -72,12 +74,14 @@ typedef struct s_args
 	time_t	time_to_sleep;
 	int	number_of_times_each_philosopher_must_eat;
 	int	*number_eaten;
-	int	*sim_end;
+	// int	*sim_end;
+	int	*death_flag;
 	int	*fork_ontable;
 	int *alive;
 	time_t	start_time;
 	pthread_mutex_t **mutex_fork;
 	pthread_mutex_t *mutex_printf;
+	pthread_mutex_t *mutex_death;
 }	t_args;
 
 typedef struct s_args_monitor
@@ -85,8 +89,9 @@ typedef struct s_args_monitor
 	int	number_of_philosophers;
 	int number_must_eat;
 	int	*number_eaten;
-	int	*sim_end;
+	int	*death_flag;
 	pthread_mutex_t *mutex_printf;
+	pthread_mutex_t *mutex_death;
 	int *alive;
 	pthread_t *philo;
 }	t_args_monitor;
@@ -105,7 +110,7 @@ time_t	timestamp(time_t t_begin);
 time_t	t_ms(struct timeval *tv);
 time_t now_time(void);
 
-int	check_sim_end(void *args);
+int	check_death_flag(void *args);
 
 int forks_available(void *args);
 void take_forks(int *fork_right, int *fork_left, void *args);
@@ -137,5 +142,8 @@ void destroy_state(t_state *state);
 
 void lock_mutex_fork(void *args);
 void unlock_mutex_fork(void *args);
+
+void 	set_death_flag(void *args);
+int	check_death_flag(void *args);
 
 #endif

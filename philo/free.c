@@ -33,7 +33,6 @@ void	destroy_state(t_state *state)
 	free(state->fork_ontable);
 	free(state->alive);
 	free(state->number_eaten);
-	free(state->sim_end);
 }
 
 void	destroy_mutex_forks(pthread_mutex_t **mutex_forks, int num)

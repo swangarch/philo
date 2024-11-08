@@ -12,56 +12,27 @@
 
 #include "philo.h"
 
-int	check_sim_end(void *args)
+int	check_death_flag(void *args)
 {
-	int	sim_end_flag;
-
-	sim_end_flag = *(((t_args *)args)->sim_end);
-	return (sim_end_flag);
+	return (*(((t_args *)args)->death_flag));
 }
 
-int		p_eat(time_t *last_eat_time, void *args, int *fork_right, int *fork_left)
+void 	set_death_flag(void *args)
 {
-	int p_index;
+	pthread_mutex_lock(((t_args *)args)->mutex_death);
+	*(((t_args *)args))->death_flag = 1;
+	pthread_mutex_unlock(((t_args *)args)->mutex_death);
+}
 
-	// if (((t_args *)args)->number_of_philosophers < 2)//////////?
-	// 	return (0);//////////////////////////////////?
-	p_index = ((t_args *)args)->philo_index;
+int		take_fork_eat(time_t *last_eat_time, void *args, int *fork_right, int *fork_left)
+{
 	take_forks(fork_right, fork_left, args);
-	// if (((t_args *)args)->number_of_philosophers < 2)
-	// {
-	// 	*fork_left = 1;
-	// 	*fork_right = 0;
-	// }
 	if (*fork_left == 1 && *fork_right == 1)
 	{
-		((t_args *)args)->alive[p_index] = philo_eat(last_eat_time, args);
-		if (!((t_args *)args)->alive[p_index])
+		if(!philo_eat(last_eat_time, args))
 			return (0);
 	}
 	return_forks(fork_right, fork_left, args);
-	return (1);
-}
-
-int		p_sleep(time_t *last_eat_time, void *args)
-{
-	int p_index;
-
-	p_index = ((t_args *)args)->philo_index;
-	((t_args *)args)->alive[p_index] = philo_sleep(*last_eat_time, args);
-		if (!((t_args *)args)->alive[p_index])
-			return (0);
-	return (1);
-}
-
-int		p_think(time_t *last_eat_time, void *args)
-{
-	int p_index;
-
-	p_index = ((t_args *)args)->philo_index;
-	((t_args *)args)->alive[p_index] = philo_think(*last_eat_time, args);
-		if (!((t_args *)args)->alive[p_index])
-			return (0);
 	return (1);
 }
 
@@ -76,17 +47,17 @@ void	*philo_func(void *args)
 	fork_right = 0;
 	if (((t_args *)args)->number_of_philosophers % 2 == 1)
 	{
-		if (!p_eat(&last_eat_time, args, &fork_right, &fork_left))
+		if (!take_fork_eat(&last_eat_time, args, &fork_right, &fork_left))
 			return (NULL);
 	}
 	while(1)
 	{
-		if (!p_sleep(&last_eat_time, args))
-			break;
-		if (!p_think(&last_eat_time, args))
-			break;
-		if (!p_eat(&last_eat_time, args, &fork_right, &fork_left))
-			break ;
+		if (!philo_sleep(last_eat_time, args))
+			return (NULL);///////////
+		if (!philo_think(last_eat_time, args))
+			return (NULL);///////////
+		if (!take_fork_eat(&last_eat_time, args, &fork_right, &fork_left))
+			return (NULL);///////////
 	}
 	return (NULL);
 }

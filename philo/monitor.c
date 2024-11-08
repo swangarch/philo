@@ -30,21 +30,21 @@ int check_all_eat_enough(void *args_monitor)
 	return (1);
 }
 
-int check_alive(void *args_monitor)
-{
-	int i;
-	int num;
+// int check_alive(void *args_monitor)
+// {
+// 	int i;
+// 	int num;
 
-	num = ((t_args_monitor *)args_monitor)->number_of_philosophers;
-	i = 0;
-	while (i < num)
-	{
-		if (((t_args_monitor *)args_monitor)->alive[i] == _DEAD)
-			return (0);
-		i++;
-	}
-	return (1);
-}
+// 	num = ((t_args_monitor *)args_monitor)->number_of_philosophers;
+// 	i = 0;
+// 	while (i < num)
+// 	{
+// 		if (((t_args_monitor *)args_monitor)->alive[i] == _DEAD)
+// 			return (0);
+// 		i++;
+// 	}
+// 	return (1);
+// }
 
 int join_philo(pthread_t *philo, int num)
 {
@@ -68,14 +68,14 @@ void	*monitor_func(void *args_monitor)
 	num = ((t_args_monitor *)args_monitor)->number_of_philosophers;
 	while(1)
 	{
-		if (!check_alive(args_monitor))
+		// if (!check_alive(args_monitor))
+		// {
+		// 	*(((t_args_monitor *)args_monitor)->sim_end) = 1;
+		// 	break ;
+		// }
+		if (check_all_eat_enough(args_monitor))  /////////only if argv not -1
 		{
-			*(((t_args_monitor *)args_monitor)->sim_end) = 1;
-			break ;
-		}
-		else if (check_all_eat_enough(args_monitor))
-		{
-			*(((t_args_monitor *)args_monitor)->sim_end) = 1;
+			set_death_flag(args_monitor);
 			break ;
 		}
 		usleep(WAIT_INTERVAL_MONITOR);

@@ -78,11 +78,10 @@ int	state_setup(t_setup *set, t_state *state)
 	state->number_eaten = init_tab(num, 0);
 	if (!state->number_eaten)
 		return (free(state->fork_ontable), free(state->alive), 0);
-	state->sim_end = malloc(sizeof(int));
-	if (!state->sim_end)
-		return (free(state->fork_ontable), free(state->alive), \
-			free(state->number_eaten), 0);
-	*(state->sim_end) = 0;
+	state->death_flag = malloc(sizeof(int));
+	if (!state->death_flag)
+		return (free(state->number_eaten), free(state->fork_ontable), free(state->alive), 0);
+	*(state->death_flag) = 0;
 	state->start_time = now_time();
 	return (1);
 }
@@ -95,9 +94,13 @@ int	mutex_setup(t_setup *set, t_mutex *mutexes)
 	mutexes->mutex_printf = malloc(sizeof(pthread_mutex_t));
 	if (!mutexes->mutex_printf)
 		return (0);
+	mutexes->mutex_death = malloc(sizeof(pthread_mutex_t));
+	if (!mutexes->mutex_death)
+		return (free(mutexes->mutex_printf), 0);
 	mutexes->mutex_forks = init_mutex_forks(num);
 	if (!mutexes->mutex_forks)
-		return (free(mutexes->mutex_printf), 0);
+		return (free(mutexes->mutex_printf), free(mutexes->mutex_death), 0);
 	pthread_mutex_init(mutexes->mutex_printf, NULL);
+	pthread_mutex_init(mutexes->mutex_death, NULL);
 	return (1);
 }
