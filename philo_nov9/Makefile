@@ -12,20 +12,18 @@
 
 NAME = philo
 
-CC = cc
+CC = cc -g
 
 CFLAGS = -Wall -Wextra -Werror 
 
-SRCS = main.c check_input.c philo_utils.c take_forks.c monitor.c philo_func.c print_msg.c setup.c init.c free.c
+SRCS = main.c check_input.c philo_utils.c take_forks.c philo_action.c monitor.c philo_func.c print_msg.c setup.c init.c free.c
 
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-%.o:%.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(NAME): $(OBJS)
+$(NAME): $(SRCS)
+	$(CC) $(CFLAGS) -c $(SRCS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 clean:

@@ -40,7 +40,7 @@ int philo_eat(time_t *last_eat_time, void *args)
 		usleep(WAIT_INTERVAL);
 		current_time = now_time();
 	}
-	((t_args *)args)->number_eaten[((t_args *)args)->philo_index]++;
+	((t_args *)args)->num_eaten[((t_args *)args)->philo_index]++;
 	return (1);
 }
 

@@ -47,7 +47,7 @@ void	**set_args_philo(t_setup *set, t_state *state, t_mutex *mutexes)
 		arg_tab[i] = (t_args *)malloc(sizeof(t_args));
 		if (arg_tab[i] == NULL)
 			return (free_tab(arg_tab), NULL);
-		((t_args *)arg_tab[i])->idx = i;
+		((t_args *)arg_tab[i])->philo_index = i;
 		init_args_philo(arg_tab[i], set, state, mutexes);
 	}
 	arg_tab[i] = NULL;

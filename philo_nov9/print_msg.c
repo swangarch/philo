@@ -20,7 +20,7 @@ void	print_msg(int message, void *args)
 
 	start_time = ((t_args *)args)->start_time;
 	time_stamp = timestamp(start_time);
-	idx = ((t_args *)args)->idx;
+	idx = ((t_args *)args)->philo_index;
 	pthread_mutex_lock(((t_args *)args)->mutex_printf);
 	if (message == FORK)
 		printf("%ld %d has taken a fork\n", time_stamp, idx + 1);
