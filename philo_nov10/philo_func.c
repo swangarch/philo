@@ -12,23 +12,31 @@
 
 #include "philo.h"
 
-int	check_death_flag(void *args)/////////////////////////////
-{
-	// pthread_mutex_lock(((t_args *)args)->mutex_death);//
-	// pthread_mutex_lock(((t_args *)args)->mutex_printf);//
-	// printf("The death flag is %d\n",*(((t_args *)args)->death_flag));//
-	// pthread_mutex_unlock(((t_args *)args)->mutex_printf);//
-	// pthread_mutex_unlock(((t_args *)args)->mutex_death);//
-	return (*(((t_args *)args)->death_flag));
-}
+// int	check_death_flag(void *args)
+// {
+// 	return (*(((t_args *)args)->death_flag));
+// }
 
-int philo_eat(void *args)
+// void 	set_death_flag(void *args)
+// {
+// 	pthread_mutex_lock(((t_args *)args)->mutex_death);
+// 	*(((t_args *)args)->death_flag) = _DEAD;
+// 	pthread_mutex_unlock(((t_args *)args)->mutex_death);
+// }
+
+// int die(time_t last_eat_time, time_t time_to_die)
+// {
+// 	if (now_time() - last_eat_time > time_to_die)
+// 		return (1);
+// 	else
+// 		return (0);
+// }
+
+int philo_eat(time_t *last_eat_time, void *args)
 {
 	lock_mutex_fork(args);
-	if (check_death_flag(args))
-		return (unlock_mutex_fork(args), 0);
 	print_msg(EAT, args);
-	((t_args *)args)->last_eat_time[((t_args *)args)->idx] = now_time();
+	*last_eat_time = now_time();
 	usleep(((t_args *)args)->time_to_eat);
 	((t_args *)args)->num_eaten[((t_args *)args)->idx]++;
 	unlock_mutex_fork(args);
@@ -37,8 +45,6 @@ int philo_eat(void *args)
 
 int philo_sleep(void *args)
 {
-	if (check_death_flag(args))
-		return (0);
 	print_msg(SLEEP, args);
 	usleep(((t_args *)args)->time_to_sleep);
 	return (1);
@@ -46,8 +52,6 @@ int philo_sleep(void *args)
 
 int philo_think(void *args)
 {
-	if (check_death_flag(args))
-		return (0);
 	print_msg(THINK, args);
 	usleep(MIN_THINK_TIME);
 	return (1);
@@ -55,20 +59,22 @@ int philo_think(void *args)
 
 void	*philo_func(void *args)
 {
-	if (check_death_flag(args))
-		return (NULL);
+	time_t last_eat_time;
+
+	last_eat_time = ((t_args *)args)->start_time;
 	if (((t_args *)args)->idx % 2)
-		usleep(15000);
-	if (check_death_flag(args))
-		return (NULL);
+	{
+		if (!philo_eat(&last_eat_time, args))
+			return (NULL);
+	}
 	while(1)
 	{
-		if (!philo_eat(args))
-			return (NULL);
 		if (!philo_sleep(args))
-			return (NULL);
+			return (NULL);///////////
 		if (!philo_think(args))
-			return (NULL);
+			return (NULL);///////////
+		if (!philo_eat(&last_eat_time, args))
+			return (NULL);///////////
 	}
 	return (NULL);
 }

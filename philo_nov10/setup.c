@@ -29,23 +29,6 @@ static int	*init_tab(int num_philo, int value)
 	return (tab);
 }
 
-static time_t	*init_last_eat_time(int num, time_t last_eat_time)
-{
-	int		i;
-	time_t		*tab;
-
-	tab = malloc(sizeof(time_t) * num);
-	if (!tab)
-		return (NULL);
-	i = 0;
-	while (i < num)
-	{
-		tab[i] = last_eat_time;
-		i++;
-	}
-	return (tab);
-}
-
 static pthread_mutex_t	**init_mutex_forks(int num_philo)
 {
 	pthread_mutex_t	**mutex_forks;
@@ -86,17 +69,17 @@ int	state_setup(t_setup *set, t_state *state)
 	int	num;
 
 	num = set->num;
+	state->fork_ontable = init_tab(num, 1);
+	if (!state->fork_ontable)
+		return (0);
 	state->num_eaten = init_tab(num, 0);
 	if (!state->num_eaten)
-		return (0);
+		return (free(state->fork_ontable), 0);
 	state->death_flag = malloc(sizeof(int));
 	if (!state->death_flag)
-		return (free(state->num_eaten), 0);
+		return (free(state->num_eaten), free(state->fork_ontable), 0);
 	*(state->death_flag) = 0;
 	state->start_time = now_time();
-	state->last_eat_time = init_last_eat_time(num, state->start_time);
-	if (!state->last_eat_time)
-		return (free(state->num_eaten), free(state->last_eat_time), 0);
 	return (1);
 }
 

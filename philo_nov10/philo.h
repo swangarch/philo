@@ -28,6 +28,7 @@
 # include <string.h>
 # include <limits.h>
 
+//#define WAIT_INTERVAL 1
 #define WAIT_INTERVAL_MONITOR 1
 #define MIN_THINK_TIME 5000
 
@@ -51,9 +52,10 @@ typedef struct s_setup
 
 typedef struct s_state{
 	int	*fork_ontable;
-	time_t	*last_eat_time;
+	//int	*alive;
 	int *death_flag;
 	int *num_eaten;
+	//int *sim_end;
 	time_t start_time;
 } t_state;
 
@@ -73,7 +75,8 @@ typedef struct s_args
 	int	num_must_eat;
 	int	*num_eaten;
 	int	*death_flag;
-	time_t	*last_eat_time;
+	int	*fork_ontable;
+	//int *alive;
 	time_t	start_time;
 	pthread_mutex_t **mutex_fork;
 	pthread_mutex_t *mutex_printf;
@@ -86,11 +89,7 @@ typedef struct s_args_monitor
 	int num_must_eat;
 	int	*num_eaten;
 	int	*death_flag;
-	time_t	time_to_die;
-	time_t	*last_eat_time;
-	time_t	start_time;
 	pthread_mutex_t *mutex_death;
-	pthread_mutex_t *mutex_printf;/////
 	pthread_t *philo;
 }	t_args_monitor;
 
@@ -108,6 +107,16 @@ time_t	timestamp(time_t t_begin);
 time_t	t_ms(struct timeval *tv);
 time_t now_time(void);
 
+// int	check_death_flag(void *args);
+
+// int forks_available(void *args);
+// void take_forks(int *fork_right, int *fork_left, void *args);
+// void return_forks(int *fork_right, int *fork_left, void *args);
+
+// int die(time_t last_eat_time, time_t time_to_die);
+// int philo_eat(time_t *last_eat_time, void *args);
+// int philo_sleep(time_t last_eat_time, void *args);
+// int philo_think(time_t last_eat_time, void *args);
 
 void	*philo_func(void *args);
 void	*monitor_func(void *args_monitor);
@@ -130,8 +139,6 @@ void destroy_state(t_state *state);
 
 void lock_mutex_fork(void *args);
 void unlock_mutex_fork(void *args);
-
-int	check_death_flag(void *args);
 
 // void 	set_death_flag(void *args);
 // int	check_death_flag(void *args);

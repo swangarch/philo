@@ -22,8 +22,8 @@ void	init_args_philo(t_args *args, t_setup *set, t_state *state, \
 	args->time_to_eat = set->time_to_eat;
 	args->time_to_sleep = set->time_to_sleep;
 	args->num_must_eat = set->num_must_eat;
+	args->fork_ontable = state->fork_ontable;
 	args->num_eaten = state->num_eaten;
-	args->last_eat_time = state->last_eat_time;
 	args->death_flag = state->death_flag;
 	args->start_time = state->start_time;
 	args->mutex_fork = mutex->mutex_forks;
@@ -62,10 +62,5 @@ void	init_args_monitor(t_args_monitor *args_monitor, t_setup *set, t_state \
 	args_monitor->death_flag = state->death_flag;
 	args_monitor->num_must_eat = set->num_must_eat;
 	args_monitor->num_eaten = state->num_eaten;
-	args_monitor->start_time = state->start_time;
 	args_monitor->num = set->num;
-	args_monitor->time_to_die = set->time_to_die;
-	args_monitor->last_eat_time = state->last_eat_time;
-	args_monitor->mutex_printf = mutex->mutex_printf;
-	args_monitor->mutex_death = mutex->mutex_death;
 }

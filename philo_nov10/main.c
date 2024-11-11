@@ -45,7 +45,6 @@ int run_simulation(t_setup *set, t_state *state, t_mutex *mutexes)
 	pthread_create(&monitor, NULL, &monitor_func, &monitor_vars);
 	create_thread(philo, arg_tab, set);
 	//ft_putstr_fd("simulation start\n", 2);
-	join_philo(philo, set->num);
 	pthread_join(monitor, NULL);
 	//ft_putstr_fd("case03\n", 2);///////////////////////////////////////////
 	free_tab(arg_tab);

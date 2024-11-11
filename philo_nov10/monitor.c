@@ -19,15 +19,6 @@ void 	monitor_set_death_flag(void *args_monitor)
 	pthread_mutex_unlock(((t_args_monitor *)args_monitor)->mutex_death);
 }
 
-int	check_death_flag_monitor(void *args_monitor)//////////////////
-{
-	// if (*(((t_args_monitor *)args_monitor)->death_flag) == _DEAD)
-	// 	ft_putstr_fd("Death flag monitor: DEAD\n", 2);
-	// else
-	// 	ft_putstr_fd("Death flag monitor: ALIVE\n", 2);
-	return (*(((t_args_monitor *)args_monitor)->death_flag));
-}
-
 int check_all_eat_enough(void *args_monitor)
 {
 	int	i;
@@ -35,44 +26,23 @@ int check_all_eat_enough(void *args_monitor)
 
 	i = 0;
 	num = ((t_args_monitor *)args_monitor)->num;
-	if (((t_args_monitor *)args_monitor)->num_must_eat < 0)
-			return (0);
+	// if (((t_args_monitor *)args_monitor)->number_must_eat < 0)
+	// 		return (0);
 	while (i < num)
 	{
+
+		//printf("number %d has eaten %d times\n", i, ((t_args_monitor *)args_monitor)->number_eaten[i]);
 		if (((t_args_monitor *)args_monitor)->num_eaten[i] < ((t_args_monitor *)args_monitor)->num_must_eat)
 			return (0);
 		i++;
 	}
+	//printf("finished\n");////////////////////////////////////////////////////
 	return (1);
 }
 
-void	print_death(void *args_monitor, int idx)
+int	monitor_check_death_flag(void *args_monitor)
 {
-	time_t	start_time;
-	time_t	time_stamp;
-
-	start_time = ((t_args_monitor *)args_monitor)->start_time;
-	time_stamp = timestamp(start_time);
-	pthread_mutex_lock(((t_args_monitor *)args_monitor)->mutex_printf);
-	printf("%ld %d died\n", time_stamp, idx + 1);
-	pthread_mutex_unlock(((t_args_monitor *)args_monitor)->mutex_printf);
-}
-
-int	monitor_check_death(void *args_monitor)
-{
-	int num;
-	int i;
-	time_t current_time;
-
-	i = -1;
-	num = ((t_args_monitor *)args_monitor)->num;
-	current_time = now_time();
-	while (++i < num)
-	{
-		if (current_time - ((t_args_monitor *)args_monitor)->last_eat_time[i] > ((t_args_monitor *)args_monitor)->time_to_die)
-			return (print_death(args_monitor, i), _DEAD);
-	}
-	return (_ALIVE);
+	return (*(((t_args_monitor *)args_monitor)->death_flag));
 }
 
 int join_philo(pthread_t *philo, int num)
@@ -94,38 +64,50 @@ void	*monitor_func(void *args_monitor)
 {
 	int num;
 
+	if (monitor_check_death_flag(args_monitor) == _DEAD)
+	{
+		ft_putstr_fd("dead\n", 2);//////
+	}
+	else
+		ft_putstr_fd("not dead\n", 2);//////
+
 	num = ((t_args_monitor *)args_monitor)->num;
 	if (((t_args_monitor *)args_monitor)->num_must_eat < 0)
 	{
 		while(1)
 		{
-			if (monitor_check_death(args_monitor) == _DEAD)
-			{
-				//ft_putstr_fd("DIED\n", 2);/////
-				monitor_set_death_flag(args_monitor);
+			if (monitor_check_death_flag(args_monitor) == _DEAD)
 				break ;
-			}
 			usleep(WAIT_INTERVAL_MONITOR);
 		}
 	}
 	else 
 	{
+		//ft_putstr_fd("case02\n", 2);
 		while(1)
 		{
-			//ft_putstr_fd("Check02\n", 2);///
-			if (monitor_check_death(args_monitor) == _DEAD)
+			// if (monitor_check_death_flag(args_monitor))
+			// 	ft_putstr_fd("monitor check death\n", 2);//////
+			// else
+			// 	ft_putstr_fd("not dead\n", 2);//////
+			if (monitor_check_death_flag(args_monitor) == _DEAD)
 			{
-				monitor_set_death_flag(args_monitor);
+				ft_putstr_fd("dead\n", 2);//////
 				break ;
 			}
-			else if (check_all_eat_enough(args_monitor))
+			else
+				ft_putstr_fd("not dead\n", 2);//////
+			//printf("flag is %d\n", monitor_check_death_flag(args_monitor));
+			if (!check_all_eat_enough(args_monitor))  /////////only if argv not -1
 			{
 				monitor_set_death_flag(args_monitor);
-				break ;
+				//printf("flag is %d\n", monitor_check_death_flag(args_monitor));///////////////////
+				//break ;
 			}
 			usleep(WAIT_INTERVAL_MONITOR);
 		}
 	}
-	// join_philo(((t_args_monitor *)args_monitor)->philo, num);
+	printf("wait\n");/////////////////////////////////////////////////////////////////
+	join_philo(((t_args_monitor *)args_monitor)->philo, num);
 	return (NULL);
 }
