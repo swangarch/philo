@@ -27,8 +27,10 @@ void	init_args_philo(t_args *args, t_setup *set, t_state *state, \
 	args->death_flag = state->death_flag;
 	args->start_time = state->start_time;
 	args->mutex_fork = mutex->mutex_forks;
+	args->mutex_eaten = mutex->mutex_eaten;
 	args->mutex_printf = mutex->mutex_printf;
 	args->mutex_death = mutex->mutex_death;
+	args->mutex_last_eat = mutex->mutex_last_eat;
 }
 
 void	**set_args_philo(t_setup *set, t_state *state, t_mutex *mutexes)
@@ -54,7 +56,7 @@ void	**set_args_philo(t_setup *set, t_state *state, t_mutex *mutexes)
 	return (arg_tab);
 }
 
-void	init_args_monitor(t_args_monitor *args_monitor, t_setup *set, t_state \
+void	init_args_monitor(t_monitor *args_monitor, t_setup *set, t_state \
 	*state, t_mutex *mutex)
 {
 	if (!args_monitor || !set || !state || !mutex)
@@ -67,5 +69,7 @@ void	init_args_monitor(t_args_monitor *args_monitor, t_setup *set, t_state \
 	args_monitor->time_to_die = set->time_to_die;
 	args_monitor->last_eat_time = state->last_eat_time;
 	args_monitor->mutex_printf = mutex->mutex_printf;
+	args_monitor->mutex_eaten = mutex->mutex_eaten;
 	args_monitor->mutex_death = mutex->mutex_death;
+	args_monitor->mutex_last_eat = mutex->mutex_last_eat;
 }

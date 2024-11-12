@@ -46,27 +46,27 @@ static time_t	*init_last_eat_time(int num, time_t last_eat_time)
 	return (tab);
 }
 
-static pthread_mutex_t	**init_mutex_forks(int num_philo)
+static pthread_mutex_t	**init_mutex_tab(int num)
 {
-	pthread_mutex_t	**mutex_forks;
+	pthread_mutex_t	**mutex_tab;
 	int				i;
 
-	mutex_forks = malloc((num_philo) * sizeof(pthread_mutex_t *));
-	if (!mutex_forks)
+	mutex_tab = malloc((num) * sizeof(pthread_mutex_t *));
+	if (!mutex_tab)
 		return (NULL);
 	i = 0;
-	while (i < num_philo)
+	while (i < num)
 	{
-		mutex_forks[i] = malloc(sizeof(pthread_mutex_t));
-		if (!mutex_forks[i])
+		mutex_tab[i] = malloc(sizeof(pthread_mutex_t));
+		if (!mutex_tab[i])
 		{
 			//free_mutex_forks
 			return (NULL);
 		}
-		pthread_mutex_init(mutex_forks[i], NULL);
+		pthread_mutex_init(mutex_tab[i], NULL);
 		i++;
 	}
-	return (mutex_forks);
+	return (mutex_tab);
 }
 
 void	sim_setup(int ac, char **av, t_setup *set)
@@ -111,8 +111,14 @@ int	mutex_setup(t_setup *set, t_mutex *mutexes)
 	mutexes->mutex_death = malloc(sizeof(pthread_mutex_t));
 	if (!mutexes->mutex_death)
 		return (free(mutexes->mutex_printf), 0);
-	mutexes->mutex_forks = init_mutex_forks(num);
+	mutexes->mutex_forks = init_mutex_tab(num);
 	if (!mutexes->mutex_forks)
+		return (free(mutexes->mutex_printf), free(mutexes->mutex_death), 0);
+	mutexes->mutex_eaten = init_mutex_tab(num);////
+	if (!mutexes->mutex_eaten)//destroy previous mutex
+		return (free(mutexes->mutex_printf), free(mutexes->mutex_death), 0);
+	mutexes->mutex_last_eat = init_mutex_tab(num);////
+	if (!mutexes->mutex_last_eat)//destroy previous mutex
 		return (free(mutexes->mutex_printf), free(mutexes->mutex_death), 0);
 	pthread_mutex_init(mutexes->mutex_printf, NULL);
 	pthread_mutex_init(mutexes->mutex_death, NULL);

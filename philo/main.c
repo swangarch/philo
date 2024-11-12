@@ -31,7 +31,7 @@ int run_simulation(t_setup *set, t_state *state, t_mutex *mutexes)
 {
 	pthread_t		monitor;
 	pthread_t		*philo;
-	t_args_monitor	monitor_vars;
+	t_monitor	monitor_vars;
 	void			**arg_tab;
 
 	/*----------------Set_vars_for_each_philo--------------------------*/

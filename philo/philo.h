@@ -28,14 +28,14 @@
 # include <string.h>
 # include <limits.h>
 
-#define WAIT_INTERVAL_MONITOR 1
-#define MIN_THINK_TIME 5000
+#define WAIT_INTERVAL_MONITOR 50
+#define MIN_THINK_TIME 2000
 
 #define FORK 0
 #define EAT 1
 #define SLEEP 2
 #define THINK 3
-#define DEAD 4
+//#define DEAD 4
 
 #define _DEAD 1
 #define _ALIVE 0
@@ -61,6 +61,8 @@ typedef struct s_mutex{
 	pthread_mutex_t *mutex_printf;
 	pthread_mutex_t *mutex_death;
 	pthread_mutex_t **mutex_forks;
+	pthread_mutex_t **mutex_eaten;
+	pthread_mutex_t **mutex_last_eat;
 } t_mutex;
 
 typedef struct s_args
@@ -76,11 +78,13 @@ typedef struct s_args
 	time_t	*last_eat_time;
 	time_t	start_time;
 	pthread_mutex_t **mutex_fork;
+	pthread_mutex_t **mutex_eaten;
+	pthread_mutex_t **mutex_last_eat;
 	pthread_mutex_t *mutex_printf;
 	pthread_mutex_t *mutex_death;
 }	t_args;
 
-typedef struct s_args_monitor
+typedef struct s_monitor
 {
 	int	num;
 	int num_must_eat;
@@ -90,9 +94,11 @@ typedef struct s_args_monitor
 	time_t	*last_eat_time;
 	time_t	start_time;
 	pthread_mutex_t *mutex_death;
+	pthread_mutex_t **mutex_eaten;
+	pthread_mutex_t **mutex_last_eat;
 	pthread_mutex_t *mutex_printf;/////
 	pthread_t *philo;
-}	t_args_monitor;
+}	t_monitor;
 
 int	all_digits(char *s);
 int	int_overflow(const char *nptr, size_t i, int sign, long num);
@@ -121,7 +127,7 @@ int mutex_setup(t_setup *set, t_mutex *mutexes);
 
 void init_args_philo(t_args *args, t_setup *set, t_state *state, t_mutex *mutex);
 void **set_args_philo(t_setup *set, t_state *state, t_mutex *mutexes);
-void init_args_monitor(t_args_monitor *args_monitor, t_setup *set, t_state *state, t_mutex *mutex);
+void init_args_monitor(t_monitor *args_monitor, t_setup *set, t_state *state, t_mutex *mutex);
 
 void destroy_mutex_forks(pthread_mutex_t **mutex_forks, int num);
 void destroy_mutexes(t_mutex *mutexes, int num);
@@ -131,7 +137,7 @@ void destroy_state(t_state *state);
 void lock_mutex_fork(void *args);
 void unlock_mutex_fork(void *args);
 
-int	check_death_flag(void *args);
+int	check_death(void *args);
 
 // void 	set_death_flag(void *args);
 // int	check_death_flag(void *args);
