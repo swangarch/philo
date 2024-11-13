@@ -14,19 +14,24 @@ NAME = philo
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror #-fsanitize=thread
 
-SRCS = main.c check_input.c philo_utils.c take_forks.c monitor.c philo_func.c print_msg.c setup.c init.c free.c
+SRCS = main.c check_input.c utils1.c utils2.c take_forks.c monitor.c philo_func.c\
+	setup.c init.c free.c
 
 OBJS = $(SRCS:.c=.o)
 
+INCLUDE = -lpthread
+
+HEADER = philo.h
+
 all: $(NAME)
 
-%.o:%.c
+%.o:%.c $(HEADER)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+	$(CC) $(INCLUDE) $(CFLAGS) $(OBJS) -o $(NAME)
 
 clean:
 	rm -f $(OBJS)

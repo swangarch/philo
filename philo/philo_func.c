@@ -14,32 +14,36 @@
 
 int	check_death(void *args)
 {
-	int death;
+	int	death;
 
-	pthread_mutex_lock(((t_args *)args)->mutex_death);
+	pthread_mutex_lock(((t_args *)args)->mtx_death);
 	death = *(((t_args *)args)->death_flag);
-	pthread_mutex_unlock(((t_args *)args)->mutex_death);
+	pthread_mutex_unlock(((t_args *)args)->mtx_death);
 	return (death);
 }
 
-int philo_eat(void *args)
+int	philo_eat(void *ag)
 {
-	lock_mutex_fork(args);
-	if (check_death(args))
+	int	fork;
+
+	fork = lock_mutex_fork(ag);
+	if (!fork)
 		return (0);
-	print_msg(EAT, args);
-	pthread_mutex_lock(((t_args *)args)->mutex_last_eat[((t_args *)args)->idx]);
-	((t_args *)args)->last_eat_time[((t_args *)args)->idx] = now_time();
-	pthread_mutex_unlock(((t_args *)args)->mutex_last_eat[((t_args *)args)->idx]);
-	usleep(((t_args *)args)->time_to_eat);
-	pthread_mutex_lock(((t_args *)args)->mutex_eaten[((t_args *)args)->idx]);
-	((t_args *)args)->num_eaten[((t_args *)args)->idx]++;
-	pthread_mutex_unlock(((t_args *)args)->mutex_eaten[((t_args *)args)->idx]);
-	unlock_mutex_fork(args);
+	else if (fork == 1)
+		return (unlock_mutex_fork(ag), 0);
+	print_msg(EAT, ag);
+	pthread_mutex_lock(((t_args *)ag)->mtx_lasteat[((t_args *)ag)->idx]);
+	((t_args *)ag)->last_eat_time[((t_args *)ag)->idx] = now_time();
+	pthread_mutex_unlock(((t_args *)ag)->mtx_lasteat[((t_args *)ag)->idx]);
+	usleep(((t_args *)ag)->time_to_eat);
+	pthread_mutex_lock(((t_args *)ag)->mtx_eaten[((t_args *)ag)->idx]);
+	((t_args *)ag)->num_eaten[((t_args *)ag)->idx]++;
+	pthread_mutex_unlock(((t_args *)ag)->mtx_eaten[((t_args *)ag)->idx]);
+	unlock_mutex_fork(ag);
 	return (1);
 }
 
-int philo_sleep(void *args)
+int	philo_sleep(void *args)
 {
 	if (check_death(args))
 		return (0);
@@ -48,7 +52,7 @@ int philo_sleep(void *args)
 	return (1);
 }
 
-int philo_think(void *args)
+int	philo_think(void *args)
 {
 	if (check_death(args))
 		return (0);
@@ -62,8 +66,11 @@ void	*philo_func(void *args)
 	if (check_death(args))
 		return (NULL);
 	if (((t_args *)args)->idx % 2)
-		usleep(5000);
-	while(1)
+	{
+		if (!philo_think(args))
+			return (NULL);
+	}
+	while (1)
 	{
 		if (check_death(args))
 			return (NULL);

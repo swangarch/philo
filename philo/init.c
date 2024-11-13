@@ -26,11 +26,11 @@ void	init_args_philo(t_args *args, t_setup *set, t_state *state, \
 	args->last_eat_time = state->last_eat_time;
 	args->death_flag = state->death_flag;
 	args->start_time = state->start_time;
-	args->mutex_fork = mutex->mutex_forks;
-	args->mutex_eaten = mutex->mutex_eaten;
-	args->mutex_printf = mutex->mutex_printf;
-	args->mutex_death = mutex->mutex_death;
-	args->mutex_last_eat = mutex->mutex_last_eat;
+	args->mtx_fork = mutex->mtx_fork;
+	args->mtx_eaten = mutex->mtx_eaten;
+	args->mtx_printf = mutex->mtx_printf;
+	args->mtx_death = mutex->mtx_death;
+	args->mtx_lasteat = mutex->mtx_lasteat;
 }
 
 void	**set_args_philo(t_setup *set, t_state *state, t_mutex *mutexes)
@@ -68,8 +68,40 @@ void	init_args_monitor(t_monitor *args_monitor, t_setup *set, t_state \
 	args_monitor->num = set->num;
 	args_monitor->time_to_die = set->time_to_die;
 	args_monitor->last_eat_time = state->last_eat_time;
-	args_monitor->mutex_printf = mutex->mutex_printf;
-	args_monitor->mutex_eaten = mutex->mutex_eaten;
-	args_monitor->mutex_death = mutex->mutex_death;
-	args_monitor->mutex_last_eat = mutex->mutex_last_eat;
+	args_monitor->mtx_printf = mutex->mtx_printf;
+	args_monitor->mtx_eaten = mutex->mtx_eaten;
+	args_monitor->mtx_death = mutex->mtx_death;
+	args_monitor->mtx_lasteat = mutex->mtx_lasteat;
+}
+
+static void	join_thread_on_fail(pthread_t *philo, int n_created)
+{
+	int		i;
+
+	i = 0;
+	while (i < n_created)
+	{
+		pthread_join(philo[i], NULL);
+		i++;
+	}
+}
+
+int	create_thread(pthread_t	*philo, void **arg_tab, t_setup *set)
+{
+	int	i;
+	int	num;
+
+	num = set->num;
+	i = 0;
+	while (i < num)
+	{
+		if (pthread_create(&philo[i], NULL, &philo_func, arg_tab[i]) != 0)
+		{
+			ft_putstr_fd("Error: fail to create thread\n", 2);
+			join_thread_on_fail(philo, i);
+			return (0);
+		}
+		i++;
+	}
+	return (1);
 }

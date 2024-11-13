@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-int	all_digits(char *s)
+static int	all_digits(char *s)
 {
 	int	i;
 
@@ -27,7 +27,7 @@ int	all_digits(char *s)
 	return (1);
 }
 
-int	int_overflow(const char *nptr, size_t i, int sign, long num)
+static int	int_overflow(const char *nptr, size_t i, int sign, long num)
 {
 	while ((nptr[i] >= 9 && nptr[i] <= 13) || nptr[i] == 32)
 		i++;
@@ -60,19 +60,19 @@ int	input_error(int ac, char **av)
 	i = 1;
 	if (ac < 5 || ac > 6)
 	{
-		write(2, "Error: incorrect argument number\n", 6);
+		ft_putstr_fd("Error: incorrect argument number\n", 2);
 		return (1);
 	}
 	while (i < ac)
 	{
 		if (int_overflow(av[i], 0, 1, 0) || !all_digits(av[i]))
 		{
-			write(2, "Error: incorrect input\n", 6);
+			ft_putstr_fd("Error: incorrect input\n", 2);
 			return (1);
 		}
 		if (ft_atoi(av[i]) <= 0)
 		{
-			write(2, "Error: incorrect input\n", 6);
+			ft_putstr_fd("Error: incorrect input\n", 2);
 			return (1);
 		}
 		i++;

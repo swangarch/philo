@@ -28,12 +28,21 @@ void	free_tab(void **tab)
 	tab = NULL;
 }
 
-void	destroy_state(t_state *state)
+void	free_mutex_tab(pthread_mutex_t **mutex_forks, int num)
 {
-	free(state->num_eaten);
+	int	i;
+
+	i = 0;
+	while (i < num)
+	{
+		free(mutex_forks[i]);
+		mutex_forks[i] = NULL;
+		i++;
+	}
+	free(mutex_forks);
 }
 
-void	destroy_mutex_forks(pthread_mutex_t **mutex_forks, int num)
+void	destroy_mutex_tab(pthread_mutex_t **mutex_forks, int num)
 {
 	int	i;
 
@@ -48,14 +57,20 @@ void	destroy_mutex_forks(pthread_mutex_t **mutex_forks, int num)
 	free(mutex_forks);
 }
 
-void	destroy_mutex_printf(pthread_mutex_t *mutex_printf)
+void	destroy_state(t_state *state)
 {
-	pthread_mutex_destroy(mutex_printf);
+	free(state->num_eaten);
+	free(state->death_flag);
+	free(state->last_eat_time);
 }
 
 void	destroy_mutexes(t_mutex *mutexes, int num)
 {
-	destroy_mutex_forks(mutexes->mutex_forks, num);
-	destroy_mutex_printf(mutexes->mutex_printf);
-	free(mutexes->mutex_printf);
+	destroy_mutex_tab(mutexes->mtx_eaten, num);
+	destroy_mutex_tab(mutexes->mtx_fork, num);
+	destroy_mutex_tab(mutexes->mtx_lasteat, num);
+	pthread_mutex_destroy(mutexes->mtx_death);
+	pthread_mutex_destroy(mutexes->mtx_printf);
+	free(mutexes->mtx_printf);
+	free(mutexes->mtx_death);
 }

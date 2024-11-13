@@ -12,68 +12,92 @@
 
 #include "philo.h"
 
-void lock_mutex_fork(void *args)
+int	lock_mutex_fork_old(void *args, int l_idx, int r_idx)
 {
-	int 	num;
-	int		p_index;
-	int		l_fork_index;
-	int		r_fork_index;
+	int	fork;
 
-	num = ((t_args *)args)->num;
-	p_index = ((t_args *)args)->idx;
-	l_fork_index = p_index;
-	r_fork_index = (p_index + 1) % ((t_args *)args)->num;
-	if (p_index / 2)
+	fork = 0;
+	pthread_mutex_lock(((t_args *)args)->mtx_fork[l_idx]);
+	fork++;
+	if (check_death(args))
 	{
-		pthread_mutex_lock(((t_args *)args)->mutex_fork[l_fork_index]);
-		if (check_death(args))
-			return(pthread_mutex_unlock(((t_args *)args)->mutex_fork[l_fork_index]), (void)0);
-		print_msg(FORK, args);
-		if (num > 1)
-		{
-			pthread_mutex_lock(((t_args *)args)->mutex_fork[r_fork_index]);
-			if (check_death(args))
-				return(pthread_mutex_unlock(((t_args *)args)->mutex_fork[r_fork_index]), (void)0);
-			print_msg(FORK, args);
-		}
+		pthread_mutex_unlock(((t_args *)args)->mtx_fork[l_idx]);
+		return (0);
 	}
-	else
+	print_msg(FORK, args);
+	if (((t_args *)args)->num > 1)
 	{
-		pthread_mutex_lock(((t_args *)args)->mutex_fork[r_fork_index]);
+		pthread_mutex_lock(((t_args *)args)->mtx_fork[r_idx]);
+		fork++;
 		if (check_death(args))
-			return(pthread_mutex_unlock(((t_args *)args)->mutex_fork[r_fork_index]), (void)0);
-		print_msg(FORK, args);
-		if (num > 1)
 		{
-			pthread_mutex_lock(((t_args *)args)->mutex_fork[l_fork_index]);
-			if (check_death(args))
-				return(pthread_mutex_unlock(((t_args *)args)->mutex_fork[l_fork_index]), (void)0);
-			print_msg(FORK, args);
+			pthread_mutex_unlock(((t_args *)args)->mtx_fork[r_idx]);
+			pthread_mutex_unlock(((t_args *)args)->mtx_fork[l_idx]);
+			return (0);
 		}
+		print_msg(FORK, args);
 	}
+	return (fork);
 }
 
-void unlock_mutex_fork(void *args)
+int	lock_mutex_fork_even(void *args, int l_idx, int r_idx)
 {
-	int 	num;
-	int		p_index;
-	int		l_fork_index;
-	int		r_fork_index;
+	int	fork;
 
-	num = ((t_args *)args)->num;
-	p_index = ((t_args *)args)->idx;
-	l_fork_index = p_index;
-	r_fork_index = (p_index + 1) % ((t_args *)args)->num;
-	if (p_index / 2)
+	fork = 0;
+	pthread_mutex_lock(((t_args *)args)->mtx_fork[r_idx]);
+	fork++;
+	if (check_death(args))
 	{
-		if (num > 1)
-			pthread_mutex_unlock(((t_args *)args)->mutex_fork[r_fork_index]);
-		pthread_mutex_unlock(((t_args *)args)->mutex_fork[l_fork_index]);
+		pthread_mutex_unlock(((t_args *)args)->mtx_fork[r_idx]);
+		return (0);
+	}
+	print_msg(FORK, args);
+	if (((t_args *)args)->num > 1)
+	{
+		pthread_mutex_lock(((t_args *)args)->mtx_fork[l_idx]);
+		fork++;
+		if (check_death(args))
+		{
+			pthread_mutex_unlock(((t_args *)args)->mtx_fork[l_idx]);
+			pthread_mutex_unlock(((t_args *)args)->mtx_fork[r_idx]);
+			return (0);
+		}
+		print_msg(FORK, args);
+	}
+	return (fork);
+}
+
+int	lock_mutex_fork(void *args)
+{
+	int		l_idx;
+	int		r_idx;
+
+	l_idx = ((t_args *)args)->idx;
+	r_idx = (((t_args *)args)->idx + 1) % ((t_args *)args)->num;
+	if (((t_args *)args)->idx + 1 / 2)
+		return (lock_mutex_fork_old(args, l_idx, r_idx));
+	else
+		return (lock_mutex_fork_even(args, l_idx, r_idx));
+}
+
+void	unlock_mutex_fork(void *args)
+{
+	int		l_idx;
+	int		r_idx;
+
+	l_idx = ((t_args *)args)->idx;
+	r_idx = (((t_args *)args)->idx + 1) % ((t_args *)args)->num;
+	if (((t_args *)args)->idx / 2)
+	{
+		if (((t_args *)args)->num > 1)
+			pthread_mutex_unlock(((t_args *)args)->mtx_fork[r_idx]);
+		pthread_mutex_unlock(((t_args *)args)->mtx_fork[l_idx]);
 	}
 	else
 	{
-		if (num > 1)
-			pthread_mutex_unlock(((t_args *)args)->mutex_fork[l_fork_index]);
-		pthread_mutex_unlock(((t_args *)args)->mutex_fork[r_fork_index]);
+		if (((t_args *)args)->num > 1)
+			pthread_mutex_unlock(((t_args *)args)->mtx_fork[l_idx]);
+		pthread_mutex_unlock(((t_args *)args)->mtx_fork[r_idx]);
 	}
 }
