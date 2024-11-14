@@ -12,28 +12,19 @@
 
 #include "philo.h"
 
-int	philo_usleep(void *args, time_t time_to_wait)
+int	check_death(void *args)
 {
-	time_t	start_time;
-	int		live_state;
+	int	death;
 
-	start_time = now_time();
-	while (1)
-	{
-		live_state = check_death(args);
-		if (live_state == DEAD)
-			return (0);
-		if (now_time() - start_time > time_to_wait)
-			return (1);
-		usleep(PHILO_INTERVAL);
-	}
-	return (1);
+	pthread_mutex_lock(((t_args *)args)->mtx_death);
+	death = *(((t_args *)args)->death_flag);
+	pthread_mutex_unlock(((t_args *)args)->mtx_death);
+	return (death);
 }
 
 int	philo_eat(void *ag)
 {
 	int	fork;
-	int	live_state;
 
 	fork = lock_mutex_fork(ag);
 	if (!fork)
@@ -44,29 +35,28 @@ int	philo_eat(void *ag)
 	pthread_mutex_lock(((t_args *)ag)->mtx_lasteat[((t_args *)ag)->idx]);
 	((t_args *)ag)->last_eat_time[((t_args *)ag)->idx] = now_time();
 	pthread_mutex_unlock(((t_args *)ag)->mtx_lasteat[((t_args *)ag)->idx]);
-	live_state = philo_usleep(ag, ((t_args *)ag)->time_to_eat);
+	usleep(((t_args *)ag)->time_to_eat);
 	pthread_mutex_lock(((t_args *)ag)->mtx_eaten[((t_args *)ag)->idx]);
 	((t_args *)ag)->num_eaten[((t_args *)ag)->idx]++;
 	pthread_mutex_unlock(((t_args *)ag)->mtx_eaten[((t_args *)ag)->idx]);
 	unlock_mutex_fork(ag);
-	return (live_state);
+	return (1);
 }
 
 int	philo_sleep(void *args)
 {
 	if (check_death(args))
 		return (0);
-	else
-		print_msg(SLEEP, args);
-	return (philo_usleep(args, ((t_args *)args)->time_to_sleep));
+	print_msg(SLEEP, args);
+	usleep(((t_args *)args)->time_to_sleep);
+	return (1);
 }
 
 int	philo_think(void *args)
 {
 	if (check_death(args))
 		return (0);
-	else
-		print_msg(THINK, args);
+	print_msg(THINK, args);
 	usleep(MIN_THINK_TIME);
 	return (1);
 }

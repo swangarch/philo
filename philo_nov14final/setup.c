@@ -14,10 +14,10 @@
 
 void	sim_setup(int ac, char **av, t_setup *set)
 {
-	set->num = (time_t)ft_atoi(av[1]);
-	set->time_to_die = ((time_t)ft_atoi(av[2])) * (time_t)1000;
-	set->time_to_eat = ((time_t)ft_atoi(av[3])) * (time_t)1000;
-	set->time_to_sleep = ((time_t)ft_atoi(av[4])) * (time_t)1000;
+	set->num = ft_atoi(av[1]);
+	set->time_to_die = ft_atoi(av[2]) * 1000;
+	set->time_to_eat = ft_atoi(av[3]) * 1000;
+	set->time_to_sleep = ft_atoi(av[4]) * 1000;
 	if (ac == 6)
 		set->num_must_eat = ft_atoi(av[5]);
 	else if (ac == 5)

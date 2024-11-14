@@ -12,24 +12,14 @@
 
 #include "philo.h"
 
-static void	set_death(void *args_monitor)
+void	set_death(void *args_monitor)
 {
 	pthread_mutex_lock(((t_monitor *)args_monitor)->mtx_death);
 	*(((t_monitor *)args_monitor)->death_flag) = DEAD;
 	pthread_mutex_unlock(((t_monitor *)args_monitor)->mtx_death);
 }
 
-int	check_death(void *args)
-{
-	int	death;
-
-	pthread_mutex_lock(((t_args *)args)->mtx_death);
-	death = *(((t_args *)args)->death_flag);
-	pthread_mutex_unlock(((t_args *)args)->mtx_death);
-	return (death);
-}
-
-static int	check_all_eat_enough(void *args_monitor)
+int	check_all_eat_enough(void *args_monitor)
 {
 	int	i;
 	int	num;
@@ -51,7 +41,7 @@ static int	check_all_eat_enough(void *args_monitor)
 	return (1);
 }
 
-static int	monitor_check_death(void *args_monitor)
+int	monitor_check_death(void *args_monitor)
 {
 	int		num;
 	int		i;
@@ -81,7 +71,7 @@ void	*monitor_func(void *args_monitor)
 		{
 			if (monitor_check_death(args_monitor) == DEAD)
 				return (set_death(args_monitor), NULL);
-			usleep(MONITOR_INTERVAL);
+			usleep(WAIT_INTERVAL_MONITOR);
 		}
 	}
 	else
@@ -92,7 +82,7 @@ void	*monitor_func(void *args_monitor)
 				return (set_death(args_monitor), NULL);
 			else if (check_all_eat_enough(args_monitor))
 				return (set_death(args_monitor), NULL);
-			usleep(MONITOR_INTERVAL);
+			usleep(WAIT_INTERVAL_MONITOR);
 		}
 	}
 	return (NULL);

@@ -21,8 +21,7 @@
 # include <string.h>
 # include <limits.h>
 
-# define MONITOR_INTERVAL 50
-# define PHILO_INTERVAL 50
+# define WAIT_INTERVAL_MONITOR 100
 # define MIN_THINK_TIME 1000
 
 # define FORK 0
