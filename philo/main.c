@@ -35,14 +35,18 @@ int	run_simulation(t_setup *set, t_state *state, t_mutex *mutexes)
 	void		**arg_tab;
 
 	arg_tab = set_args_philo(set, state, mutexes);
+	if (!arg_tab)
+		return (ft_putstr_fd("Error: malloc failed\n", 2), 0);
 	philo = malloc(sizeof(pthread_t) * set->num);
 	if (!philo)
-		return (ft_putstr_fd("Error: malloc failed\n", 2), 0);
+		return (ft_putstr_fd("Error: malloc failed\n", 2), free_tab(arg_tab), 0);
 	init_args_monitor(&monitor_vars, set, state, mutexes);
 	if (pthread_create(&monitor, NULL, &monitor_func, &monitor_vars) != 0)
-		return (ft_putstr_fd("Error: fail to create thread\n", 2), 0);
+		return (ft_putstr_fd("Error: fail to create thread\n", 2), \
+			free_tab(arg_tab), free(philo), 0);
 	if (!create_thread(philo, arg_tab, set))
-		return (pthread_join(monitor, NULL), 0);
+		return (pthread_join(monitor, NULL), join_philo(philo, set->num), \
+			free_tab(arg_tab), free(philo), 0);
 	join_philo(philo, set->num);
 	pthread_join(monitor, NULL);
 	free_tab(arg_tab);
