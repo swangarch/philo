@@ -76,10 +76,7 @@ void	*philo_func(void *args)
 	if (check_death(args))
 		return (NULL);
 	if (((t_args *)args)->idx % 2)
-	{
-		if (!philo_think(args))
-			return (NULL);
-	}
+		usleep(1000);
 	while (1)
 	{
 		if (check_death(args))
